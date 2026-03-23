@@ -1,0 +1,92 @@
+body {
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 0;
+      line-height: 1.4;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 30px 0 10px;
+    }
+
+    section {
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 1200px;
+      border: 2px solid #070707;
+      border-radius: 8px;
+    }
+
+    .task1-grid {
+      display: grid;
+      grid-template-areas:
+        "header header"
+        "nav content"
+        "nav sidebar"
+        "footer footer";
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 80px 200px 150px 80px;
+      gap: 10px;
+    }
+
+    .task1-grid div {
+      background-color: #a0d8f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .header { grid-area: header; background-color: #f28c8c; }
+    .nav { grid-area: nav; background-color: #f2c38f; }
+    .content { grid-area: content; background-color: #a0f2b8; }
+    .sidebar { grid-area: sidebar; background-color: #f2f2a0; }
+    .footer { grid-area: footer; background-color: #d6a0f2; }
+
+    .task2-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 150px 150px 150px;
+      gap: 10px;
+    }
+
+    .task2-grid div {
+      background-color: #f0b0b0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .mag1 { grid-column: span 2; grid-row: span 2; background-color: #f7a1a1; }
+    .mag2 { background-color: #f7d48c; }
+    .mag3 { background-color: #a1f7c4; }
+    .mag4 { background-color: #a1c8f7; }
+    .mag5 { background-color: #f7a1e2; }
+
+    .task3-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .product-card {
+      background-color: #f2f2f2;
+      padding: 15px;
+      display: grid;
+      grid-template-rows: 150px 30px 30px;
+      border-radius: 8px;
+      justify-items: center;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 5px;
+    }

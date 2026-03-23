@@ -1,0 +1,47 @@
+/* Responsive tables: horizontal scroll on small screens */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Responsive iframes: wrap in .iframe-responsive if needed */
+.iframe-responsive {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+.iframe-responsive iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+/* Make content readable and not zoomed out */
+body {
+  font-family:'Calibri', 'Segoe UI'; 
+  line-height: 1.6;
+  margin: 10px;
+  padding: 0;
+}
+
+/* Navbar links should stack on small screens */
+header nav div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Make images & videos fit mobile screens */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}

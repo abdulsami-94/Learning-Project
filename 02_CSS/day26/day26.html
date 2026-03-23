@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Day 26 — Transitions & Animations Demo</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  <main class="wrap" aria-labelledby="title">
+    <h1 id="title">Day 26 — Transitions & Animations</h1>
+    <p class="lead">Animated button (transition + ::after), ring loading spinner (keyframes), and image bounce (keyframes). Try hover, click, and keyboard focus.</p>
+
+    <section class="card" aria-labelledby="btns-title">
+      <div class="section-title">
+        <strong id="btns-title">Animated buttons</strong>
+        <span class="muted">use <code>transition</code> and <code>::after</code> for icon slide</span>
+      </div>
+
+      <div class="row" role="group" aria-label="buttons">
+        <div class="col">
+          <button class="btn" type="button">Primary Action</button>
+        </div>
+
+        <div class="col">
+          <button class="btn ghost" type="button">Secondary</button>
+        </div>
+
+        <div class="col">
+          <button class="btn" type="button" aria-pressed="false">Try me</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="spinner-title" style="margin-top:18px;">
+      <div class="section-title">
+        <strong id="spinner-title">Loading spinner</strong>
+        <span class="muted">simple ring using border + rotate animation</span>
+      </div>
+
+      <div class="row" style="align-items:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:12px;">
+          <div class="spinner" role="status" aria-live="polite" aria-label="Loading"></div>
+          <div class="caption">Loading…</div>
+        </div>
+
+        <div style="flex:1;min-width:200px;padding-left:12px;color:var(--muted);font-size:13px;">
+          Tip: another pattern is 3 pulsing dots (use <code>@keyframes</code> on <code>opacity/transform</code> with staggered delays).</div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="bounce-title" style="margin-top:18px;">
+      <div class="section-title">
+        <strong id="bounce-title">Bounce & float image</strong>
+        <span class="muted">subtle float (infinite) or bounce on hover</span>
+      </div>
+
+      <div class="row" style="align-items:center;">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:12px;">
+          <img src="https://images.unsplash.com/photo-1547721064-da6cfb341d50?q=80&w=800&auto=format&fit=crop&s=5a6c6d2b2b2e0b4e5f8a"
+               alt="" class="hero-img bounce-subtle" aria-hidden="true">
+          <div class="caption">Decorative float (infinite)</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;padding:12px;">
+          <img src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?q=80&w=800&auto=format&fit=crop&s=7f4f2a1d2a9f1b3f1a5c"
+               alt="Illustration example" class="hero-img bounce-on-hover">
+          <div class="caption">Hover me to bounce (interactive)</div>
+        </div>
+      </div>
+    </section>
+
+    <p style="margin-top:18px;font-size:13px;color:var(--muted);">
+      Note: animations are disabled for users who prefer reduced motion (<code>prefers-reduced-motion</code>).
+    </p>
+  </main>
+</body>
+</html>

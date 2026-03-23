@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Phase 2 — Sequences & Collections</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c10;
+    --surface: #13131a;
+    --surface2: #1a1a24;
+    --border: #25253a;
+    --text: #dddbd5;
+    --muted: #55546a;
+    --comment: #4a6a4a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .phase-label { font-size: 10px; letter-spacing: 4px; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; }
+  header h1 { font-size: 18px; font-weight: 800; color: var(--text); }
+  .progress-wrap { text-align: right; }
+  .progress-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); margin-bottom: 8px; }
+  .progress-bar-outer { width: 150px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
+  .progress-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, #e8c547, #5bc8af); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .progress-pct { font-size: 13px; color: #e8c547; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+  .layout { display: flex; flex: 1; overflow: hidden; }
+
+  aside { width: 210px; background: var(--surface); border-right: 1px solid var(--border); padding: 18px 0; flex-shrink: 0; overflow-y: auto; }
+
+  .topic-btn {
+    width: 100%; background: transparent; border: none; border-left: 3px solid transparent;
+    padding: 10px 20px; text-align: left; cursor: pointer; display: flex; align-items: center;
+    gap: 9px; font-family: 'Syne', sans-serif; font-size: 13px; color: var(--muted); transition: all 0.15s;
+  }
+  .topic-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .topic-btn.active { background: #1e1e2e; font-weight: 700; }
+
+  .sub-sections { padding: 4px 0 4px 38px; display: none; }
+  .sub-sections.open { display: block; }
+  .sub-btn {
+    width: 100%; background: transparent; border: none; padding: 5px 8px; text-align: left;
+    cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px; transition: color 0.15s;
+  }
+  .sub-btn:hover, .sub-btn.active { color: var(--text); }
+
+  main { flex: 1; overflow-y: auto; padding: 32px 44px; max-width: 860px; }
+
+  .section-tabs { display: flex; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+  .tab-btn { padding: 4px 14px; background: transparent; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 10px; transition: all 0.15s; }
+
+  .topic-header { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+  .topic-emoji { font-size: 30px; }
+  .topic-title { font-size: 22px; font-weight: 800; }
+  .section-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── CODE BLOCK ── */
+  .code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 22px 26px; margin-bottom: 16px; overflow-x: auto; }
+  .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.85; white-space: pre; color: var(--text); }
+  .line-comment { color: var(--comment); }
+  .line-section-head { color: #8888aa; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ── EXPLAIN PANEL ── */
+  .explain-panel { margin-bottom: 18px; }
+  .explain-row {
+    display: flex; gap: 0; margin-bottom: 2px; border-radius: 7px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .explain-row:hover { border-color: #3a3a55; }
+  .explain-toggle {
+    background: var(--surface2); border: none; cursor: pointer;
+    padding: 10px 14px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted); white-space: nowrap;
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .explain-toggle:hover { color: var(--text); }
+  .explain-toggle .arrow { transition: transform 0.2s; display: inline-block; font-size: 10px; }
+  .explain-toggle.open .arrow { transform: rotate(90deg); }
+  .explain-summary { background: #16161f; padding: 10px 16px; font-size: 13px; color: #9997b0; display: flex; align-items: center; flex: 1; font-family: 'JetBrains Mono', monospace; }
+  .explain-body {
+    display: none; padding: 14px 18px 16px;
+    background: #0f0f18; border-top: 1px solid var(--border);
+    font-size: 13.5px; line-height: 1.85; color: #c8c6d8;
+  }
+  .explain-body.open { display: block; }
+  .explain-body p { margin-bottom: 10px; }
+  .explain-body p:last-child { margin-bottom: 0; }
+  .explain-body code {
+    background: #1e1e2e; padding: 1px 6px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #e8c547;
+  }
+  .explain-body .mini-example {
+    background: #1a1a28; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 14px; margin: 10px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7;
+    color: var(--text); white-space: pre-wrap;
+  }
+  .explain-body .mini-comment { color: var(--comment); }
+  .explain-body strong { color: var(--text); font-weight: 700; }
+  .explain-body .highlight { color: #e8c547; }
+  .explain-body .good { color: #5bc8af; }
+  .explain-body .bad { color: #c84a4a; }
+
+  /* ── NOTE BOX ── */
+  .note-box { border-radius: 7px; padding: 13px 18px; margin-bottom: 28px; font-size: 13px; line-height: 1.7; color: #c8a85a; border-left-width: 3px; border-left-style: solid; background: #1a1510; }
+
+  /* ── QUIZ ── */
+  .quiz-box { background: #13131e; border: 1px solid #2a2a45; border-radius: 10px; padding: 26px; margin-bottom: 28px; }
+  .quiz-label { font-size: 10px; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; font-family: 'JetBrains Mono', monospace; }
+  .quiz-q { background: #0f0f1a; border: 1px solid var(--border); border-radius: 7px; padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); margin-bottom: 20px; white-space: pre-wrap; line-height: 1.7; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-btn { padding: 11px 18px; background: #1e1e2e; border: 1px solid var(--border); border-radius: 7px; color: #c8c6c0; cursor: pointer; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: left; transition: all 0.15s; }
+  .opt-btn:hover:not(:disabled) { border-color: #55546a; color: var(--text); }
+  .opt-btn:disabled { cursor: default; }
+  .opt-btn.correct { background: #0d2018; border-color: #5bc8af; color: #5bc8af; }
+  .opt-btn.wrong   { background: #201010; border-color: #c84a4a; color: #c84a4a; }
+
+  .quiz-result { margin-top: 16px; padding: 14px 18px; border-radius: 7px; font-size: 13px; font-family: 'JetBrains Mono', monospace; line-height: 1.8; display: none; }
+  .quiz-result.show { display: block; }
+  .quiz-result.ok   { background: #0d2018; border: 1px solid #5bc8af; color: #5bc8af; }
+  .quiz-result.fail { background: #201010; border: 1px solid #c84a4a; color: #c84a4a; }
+  .quiz-result .expl { color: #c8c6c0; display: block; margin-top: 6px; }
+  .quiz-result .walkthrough { color: #9997b0; display: block; margin-top: 8px; font-size: 12px; border-top: 1px solid #2a2a35; padding-top: 8px; }
+
+  /* ── NAV ── */
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .nav-btn { padding: 9px 20px; border-radius: 7px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px; }
+  .nav-btn.prev { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .nav-btn.prev:hover:not(:disabled) { color: var(--text); border-color: #55546a; }
+  .nav-btn.prev:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn.next { border: none; color: #0c0c10; font-weight: 800; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2a2a3a; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3a50; }
+
+  @media (max-width: 700px) {
+    aside { width: 56px; }
+    .topic-btn span:last-child { display: none; }
+    .sub-sections { display: none !important; }
+    main { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="phase-label">Phase 2</div>
+    <h1>Sequences &amp; Collections</h1>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-label">Progress</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+      <span class="progress-pct" id="progressPct">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main id="main"></main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  TOPIC DATA
+// ─────────────────────────────────────────────
+const topics = [
+
+  // ══════════════════════════════════ STRINGS
+  {
+    id:"strings", label:"Strings", emoji:"🔤", color:"#e8c547",
+    sections:[
+      {
+        title:"Indexing & Slicing",
+        code:[
+          ['comment','# Every character has a position number (index)'],
+          ['normal', 's = "Python"'],
+          ['normal', '#     P  y  t  h  o  n'],
+          ['normal', '#     0  1  2  3  4  5   ← forward'],
+          ['normal', '#    -6 -5 -4 -3 -2 -1   ← backward'],
+          ['blank',  ''],
+          ['comment','# Indexing — grab one character'],
+          ['normal', "s[0]     # → 'P'    first character"],
+          ['normal', "s[2]     # → 't'    third character"],
+          ['normal', "s[-1]    # → 'n'    last character"],
+          ['normal', "s[-2]    # → 'o'    second-to-last"],
+          ['blank',  ''],
+          ['comment','# Slicing — grab a range  [start : stop : step]'],
+          ['comment','#   start  = index to begin (inclusive)'],
+          ['comment','#   stop   = index to end   (EXCLUSIVE — not included)'],
+          ['comment','#   step   = how many to jump (default 1)'],
+          ['blank',  ''],
+          ['normal', "s[0:3]   # → 'Pyt'   indices 0,1,2 (stop=3 excluded)"],
+          ['normal', "s[2:5]   # → 'tho'   indices 2,3,4"],
+          ['normal', "s[:3]    # → 'Pyt'   omit start = begin from 0"],
+          ['normal', "s[3:]    # → 'hon'   omit stop  = go to end"],
+          ['normal', "s[:]     # → 'Python' full copy"],
+          ['blank',  ''],
+          ['comment','# Step examples'],
+          ['normal', "s[::2]   # → 'Pto'   every 2nd char: P(0),t(2),o(4)"],
+          ['normal', "s[1::2]  # → 'yhn'   start at 1, then every 2nd"],
+          ['normal', "s[::-1]  # → 'nohtyP' step=-1 walks BACKWARDS → reverse"],
+          ['normal', "s[4:1:-1]# → 'oht'   from index 4 down to index 2"],
+        ],
+        explain:[
+          {
+            label:"Why does stop exclude the character at that index?",
+            summary:"It's intentional — makes length maths and looping cleaner.",
+            body:`<p>This is a deliberate design choice called <strong>half-open intervals</strong>. The slice <code>s[0:3]</code> gives you exactly <strong>3 characters</strong> — because 3-0=3. If stop were inclusive, you'd need <code>s[0:2]</code> to get 3 chars, which would confuse everyone including you.</p>
+<p>It also means slices never overlap: <code>s[:3]</code> and <code>s[3:]</code> together give you the whole string with no duplicates and no gaps.</p>
+<div class="mini-example">word = "abcdef"
+word[:3]   <span class="mini-comment"># → 'abc'  (first half)</span>
+word[3:]   <span class="mini-comment"># → 'def'  (second half)</span>
+word[:3] + word[3:] == word  <span class="mini-comment"># → True, always</span></div>`
+          },
+          {
+            label:"How negative indexing actually works",
+            summary:"Python just adds len(s) to a negative index behind the scenes.",
+            body:`<p>When you write <code>s[-1]</code>, Python internally computes <code>s[len(s) - 1]</code>. So for a 6-char string, <code>s[-1]</code> = <code>s[5]</code>.</p>
+<p>This is useful for grabbing the end of a sequence without knowing its length:</p>
+<div class="mini-example">log = "ERROR: disk full"
+log[-9:]   <span class="mini-comment"># → 'disk full'  last 9 chars</span>
+log[:-7]   <span class="mini-comment"># → 'ERROR: di'  everything except last 7</span></div>`
+          },
+          {
+            label:"The step parameter — common patterns",
+            summary:"Step controls how many positions to jump each time.",
+            body:`<p><code>s[::2]</code> starts at index 0 and jumps by 2 each time — so it grabs even-indexed characters. <code>s[1::2]</code> starts at 1 and jumps by 2 — odd-indexed characters.</p>
+<p>A negative step walks <strong>backwards</strong>. That's why <code>s[::-1]</code> reverses any string or list — it starts at the end and steps back by 1 each time.</p>
+<div class="mini-example">s = "abcdef"
+s[::2]    <span class="mini-comment"># → 'ace'   even indices</span>
+s[1::2]   <span class="mini-comment"># → 'bdf'   odd indices</span>
+s[::-1]   <span class="mini-comment"># → 'fedcba' reversed</span>
+s[5:1:-1] <span class="mini-comment"># → 'fedc'  from index 5 down to index 2</span></div>`
+          }
+        ],
+        note:"Strings are immutable — you can read any character but you cannot change one. s[0] = 'X' throws a TypeError. To 'modify' a string you build a new one.",
+        quiz:{
+          q:'s = "abcdefg"\nWhat does s[1:6:2] return?',
+          options:["'bdf'","'ace'","'bdfg'","'bcdef'"],
+          answer:0,
+          explanation:"Start=1('b'), stop=6(exclusive), step=2. Walk: b(1) → d(3) → f(5). Stop before 6. Result: 'bdf'",
+          walkthrough:"Step through it:\n  s[1] = 'b'  ✓  (1 < 6)\n  s[3] = 'd'  ✓  (3 < 6)\n  s[5] = 'f'  ✓  (5 < 6)\n  s[7]       ✗  (7 ≥ 6, stop)\nAnswer: 'bdf'"
+        }
+      },
+      {
+        title:"Common Methods",
+        code:[
+          ['comment','# strip — remove leading/trailing whitespace (or chars)'],
+          ['normal', 's = "  hello world  "'],
+          ['normal', "s.strip()          # → 'hello world'"],
+          ['normal', "s.lstrip()         # → 'hello world  '  (left only)"],
+          ['normal', "s.rstrip()         # → '  hello world'  (right only)"],
+          ['normal', '"---hi---".strip("-")  # → \'hi\'  strip specific chars'],
+          ['blank',  ''],
+          ['comment','# find — returns index of first match, -1 if not found'],
+          ['normal', 's = "the cat sat on the mat"'],
+          ['normal', 's.find("cat")      # → 4'],
+          ['normal', 's.find("bat")      # → -1   (not found)'],
+          ['normal', 's.find("at")       # → 5    (first occurrence)'],
+          ['normal', 's.find("at", 6)    # → 9    (search from index 6)'],
+          ['blank',  ''],
+          ['comment','# replace — swap out a substring (all occurrences)'],
+          ['normal', 's.replace("at", "og")  # → \'the cog sog on the mog\''],
+          ['normal', 's.replace("at", "og", 1)  # → \'the cog sat on the mat\''],
+          ['blank',  ''],
+          ['comment','# split & join — the pair you will use constantly'],
+          ['normal', '"a,b,c".split(",")       # → [\'a\', \'b\', \'c\']'],
+          ['normal', '"hello world".split()    # → [\'hello\', \'world\'] (any whitespace)'],
+          ['normal', '",".join(["a","b","c"])  # → \'a,b,c\''],
+          ['blank',  ''],
+          ['comment','# case + check methods'],
+          ['normal', '"Hello".upper()      # → \'HELLO\''],
+          ['normal', '"Hello".lower()      # → \'hello\''],
+          ['normal', '"hello".capitalize() # → \'Hello\''],
+          ['normal', '"hello world".title()# → \'Hello World\''],
+          ['normal', '"  ".strip() == ""   # → True (empty after strip)'],
+          ['normal', '"abc123".isalnum()   # → True (letters and/or digits only)'],
+          ['normal', '"123".isdigit()      # → True'],
+          ['normal', '"hello".startswith("he") # → True'],
+          ['normal', '"hello".endswith("lo")   # → True'],
+        ],
+        explain:[
+          {
+            label:"strip() vs find() — common confusion",
+            summary:"strip() cleans edges. find() searches inside. They're unrelated.",
+            body:`<p><code>strip()</code> only touches the <strong>edges</strong> of the string — left side and right side. It stops as soon as it hits a character not in the strip set. It does nothing to the middle.</p>
+<div class="mini-example">"  a  b  c  ".strip()   <span class="mini-comment"># → 'a  b  c'  (middle spaces untouched)</span>
+"xxhelloxx".strip("x")  <span class="mini-comment"># → 'hello'</span>
+"xhellox".strip("xo")   <span class="mini-comment"># → 'hell'   strips x AND o from edges</span></div>
+<p><code>find()</code> searches anywhere in the string and returns the <strong>index</strong> (position) of the first match, or <strong>-1</strong> if nothing found. Never raises an error — unlike using <code>index()</code> which crashes on no-match.</p>`
+          },
+          {
+            label:"split() and join() — two sides of the same coin",
+            summary:"split() breaks a string into a list. join() reassembles a list into a string.",
+            body:`<p>These two are inverses of each other. You'll use them constantly for processing CSV data, parsing user input, reformatting text.</p>
+<div class="mini-example"><span class="mini-comment"># Round trip — split then join</span>
+csv = "alice,30,london"
+parts = csv.split(",")       <span class="mini-comment"># → ['alice', '30', 'london']</span>
+parts[1] = "31"              <span class="mini-comment"># edit the age</span>
+result = ",".join(parts)     <span class="mini-comment"># → 'alice,31,london'</span>
+
+<span class="mini-comment"># split() with no argument splits on ANY whitespace</span>
+"  lots   of   spaces  ".split()   <span class="mini-comment"># → ['lots', 'of', 'spaces']</span>
+
+<span class="mini-comment"># join() requires ALL items to be strings</span>
+",".join([1, 2, 3])    <span class="mini-comment"># 🔥 TypeError — use str() first</span>
+",".join(map(str, [1, 2, 3]))  <span class="mini-comment"># → '1,2,3'  ✓</span></div>`
+          },
+          {
+            label:"replace() — replacing all vs. one occurrence",
+            summary:"By default replace() swaps every match. Third argument limits it.",
+            body:`<p><code>replace(old, new)</code> replaces ALL occurrences of <code>old</code> with <code>new</code>.</p>
+<p><code>replace(old, new, count)</code> only replaces the first <code>count</code> matches — useful when you want surgical precision.</p>
+<div class="mini-example">s = "aabbaa"
+s.replace("a", "x")     <span class="mini-comment"># → 'xxbbxx'   (all 4 a's replaced)</span>
+s.replace("a", "x", 2)  <span class="mini-comment"># → 'xxbbaa'   (only first 2)</span>
+
+<span class="mini-comment"># Common use: remove characters by replacing with empty string</span>
+"hello, world!".replace(",", "").replace("!", "")
+<span class="mini-comment"># → 'hello world'</span></div>`
+          }
+        ],
+        note:"All string methods return a NEW string. s.upper() doesn't change s. If you need the result, assign it: s = s.upper(). Forgetting this is embarrassingly common.",
+        quiz:{
+          q:'"  Python3  ".strip().lower().replace("3","")',
+          options:["'python3'","'python'","'Python'","' python '"],
+          answer:1,
+          explanation:"Chain left to right: strip() → 'Python3', lower() → 'python3', replace('3','') → 'python'",
+          walkthrough:"Step by step:\n  '  Python3  '.strip()        → 'Python3'\n  'Python3'.lower()            → 'python3'\n  'python3'.replace('3','')    → 'python'\nFinal answer: 'python'"
+        }
+      }
+    ]
+  },
+
+  // ══════════════════════════════════ LISTS
+  {
+    id:"lists", label:"Lists", emoji:"📋", color:"#5bc8af",
+    sections:[
+      {
+        title:"List Comprehensions",
+        code:[
+          ['comment','# The long way — build a list with a for loop'],
+          ['normal', 'squares = []'],
+          ['normal', 'for x in range(5):'],
+          ['normal', '    squares.append(x ** 2)'],
+          ['normal', '# squares → [0, 1, 4, 9, 16]'],
+          ['blank',  ''],
+          ['comment','# List comprehension — same result, one line'],
+          ['comment','# Syntax: [expression  for item in iterable]'],
+          ['normal', 'squares = [x**2 for x in range(5)]'],
+          ['normal', '# → [0, 1, 4, 9, 16]'],
+          ['blank',  ''],
+          ['comment','# With a filter condition'],
+          ['comment','# Syntax: [expression  for item in iterable  if condition]'],
+          ['normal', 'evens  = [x for x in range(10) if x % 2 == 0]'],
+          ['normal', '# → [0, 2, 4, 6, 8]'],
+          ['blank',  ''],
+          ['normal', 'long_words = [w for w in ["hi","hello","hey","howdy"] if len(w) > 3]'],
+          ['normal', "# → ['hello', 'howdy']"],
+          ['blank',  ''],
+          ['comment','# Transform AND filter in one go'],
+          ['normal', 'upper_long = [w.upper() for w in ["hi","hello","hey","howdy"] if len(w) > 3]'],
+          ['normal', "# → ['HELLO', 'HOWDY']"],
+          ['blank',  ''],
+          ['comment','# Nested comprehension — flatten a 2D list'],
+          ['comment','# Read: "x for each row, for each x in that row"'],
+          ['normal', 'matrix = [[1,2,3],[4,5,6],[7,8,9]]'],
+          ['normal', 'flat = [x for row in matrix for x in row]'],
+          ['normal', '# → [1, 2, 3, 4, 5, 6, 7, 8, 9]'],
+          ['blank',  ''],
+          ['comment','# Dict comprehension (same idea, different brackets)'],
+          ['normal', 'lengths = {w: len(w) for w in ["hi","hello","hey"]}'],
+          ['normal', "# → {'hi': 2, 'hello': 5, 'hey': 3}"],
+        ],
+        explain:[
+          {
+            label:"How to read and write a comprehension",
+            summary:"Read left to right. Write by translating your for-loop inside-out.",
+            body:`<p>The structure is always: <code>[<span class="highlight">what you want</span> for <span class="highlight">item</span> in <span class="highlight">iterable</span> if <span class="highlight">condition</span>]</code></p>
+<p>To convert a loop to a comprehension, follow this pattern:</p>
+<div class="mini-example"><span class="mini-comment"># Original loop</span>
+result = []
+for item in collection:
+    if condition(item):
+        result.append(transform(item))
+
+<span class="mini-comment"># Comprehension equivalent</span>
+result = [transform(item) for item in collection if condition(item)]</div>
+<p>The <code>if</code> part is optional — only include it when you're filtering. Don't add <code>else</code> unless you know what you're doing (it changes the syntax entirely).</p>`
+          },
+          {
+            label:"if-else inside a comprehension — it's different from filtering",
+            summary:"Filter goes after 'for'. if-else transformation goes before 'for'.",
+            body:`<p>These two look similar but do completely different things:</p>
+<div class="mini-example"><span class="mini-comment"># FILTER — 'if' after 'for': keeps only matching items</span>
+[x for x in range(10) if x > 5]
+<span class="mini-comment"># → [6, 7, 8, 9]   (items where x&gt;5)</span>
+
+<span class="mini-comment"># TRANSFORM — 'if/else' before 'for': every item is included</span>
+[x if x > 5 else 0 for x in range(10)]
+<span class="mini-comment"># → [0,0,0,0,0,0,6,7,8,9]  (replace small numbers with 0)</span></div>
+<p>The second form is a <strong>ternary expression</strong>: <code>value_if_true if condition else value_if_false</code>. Every single item in the iterable produces one output — nothing is filtered out.</p>`
+          },
+          {
+            label:"When NOT to use a comprehension",
+            summary:"If it needs more than one line to explain, just write a loop.",
+            body:`<p>Comprehensions are great for simple transforms and filters. They become a liability when:</p>
+<p>• You need multiple conditions chained with complex logic<br>
+• The expression itself is long and nested<br>
+• You need to do multiple things per iteration</p>
+<div class="mini-example"><span class="mini-comment"># Readable: fine as a comprehension</span>
+[x**2 for x in data if x > 0]
+
+<span class="mini-comment"># Unreadable: use a loop instead</span>
+[f(x) if x > 0 else g(x) for x in data if h(x) and not k(x)]</div>
+<p>Nobody will respect you more for writing an unreadable one-liner. Write the loop.</p>`
+          }
+        ],
+        note:"Comprehensions are faster than equivalent for-loops in Python because they're optimised at the bytecode level. Not dramatically — but the readability win is reason enough to learn them.",
+        quiz:{
+          q:'words = ["cat", "elephant", "ox", "dog", "hippopotamus"]\n[w.upper() for w in words if len(w) > 3]',
+          options:["['ELEPHANT','HIPPOPOTAMUS']","['CAT','OX','DOG']","['ELEPHANT','DOG','HIPPOPOTAMUS']","['ELEPHANT','HIPPOPOTAMUS','DOG']"],
+          answer:0,
+          explanation:"len > 3: 'elephant'(8)✓, 'hippopotamus'(12)✓. 'cat'(3)✗, 'ox'(2)✗, 'dog'(3)✗. Then .upper() each.",
+          walkthrough:"Check each word:\n  'cat'         len=3  ✗ skip\n  'elephant'    len=8  ✓ → 'ELEPHANT'\n  'ox'          len=2  ✗ skip\n  'dog'         len=3  ✗ skip\n  'hippopotamus' len=12 ✓ → 'HIPPOPOTAMUS'\nResult: ['ELEPHANT', 'HIPPOPOTAMUS']"
+        }
+      },
+      {
+        title:"Useful Methods",
+        code:[
+          ['comment','# ── append vs extend ── the one everyone gets wrong'],
+          ['normal', 'lst = [1, 2, 3]'],
+          ['blank',  ''],
+          ['normal', 'lst.append(4)        # → [1, 2, 3, 4]      adds ONE item'],
+          ['normal', 'lst.append([5, 6])   # → [1, 2, 3, 4, [5,6]] adds LIST as one item'],
+          ['normal', 'lst.extend([7, 8])   # → [..., 7, 8]       unpacks and merges'],
+          ['normal', 'lst += [9, 10]       # same as extend'],
+          ['blank',  ''],
+          ['comment','# ── insert(index, value) ── add at a specific position'],
+          ['normal', 'lst = ["a", "b", "d"]'],
+          ['normal', 'lst.insert(2, "c")   # → ["a","b","c","d"]  insert before index 2'],
+          ['normal', 'lst.insert(0, "z")   # → ["z","a","b","c","d"] prepend'],
+          ['normal', 'lst.insert(99, "x")  # → [..., "x"]  index too large → appends'],
+          ['blank',  ''],
+          ['comment','# ── remove vs pop vs del ── three ways to delete'],
+          ['normal', 'lst = [10, 20, 30, 20, 40]'],
+          ['normal', 'lst.remove(20)   # → [10,30,20,40]  removes FIRST match by VALUE'],
+          ['normal', 'lst.pop()        # → removes & returns 40 (last item)'],
+          ['normal', 'lst.pop(1)       # → removes & returns item at index 1'],
+          ['normal', 'del lst[0]       # → removes item at index 0, returns nothing'],
+          ['blank',  ''],
+          ['comment','# ── sort vs sorted ── in-place vs new list'],
+          ['normal', 'nums = [3, 1, 4, 1, 5, 9, 2]'],
+          ['normal', 'nums.sort()                  # modifies nums, returns None'],
+          ['normal', 'nums.sort(reverse=True)      # descending, still in-place'],
+          ['normal', 'new = sorted(nums)           # returns new sorted list, nums unchanged'],
+          ['normal', 'new = sorted(nums, reverse=True)'],
+          ['blank',  ''],
+          ['comment','# sort by a key (custom ordering)'],
+          ['normal', 'words = ["banana","apple","cherry","kiwi"]'],
+          ['normal', 'words.sort(key=len)          # sort by string length'],
+          ['normal', "# → ['kiwi','apple','banana','cherry']"],
+        ],
+        explain:[
+          {
+            label:"append vs extend — visualised",
+            summary:"append adds the thing itself. extend adds each item inside the thing.",
+            body:`<p>Think of a list as a box. <code>append</code> puts a whole new object in the box — even if that object is itself a box. <code>extend</code> opens the new object and puts its contents in.</p>
+<div class="mini-example">box = [1, 2, 3]
+
+box.append([4, 5])   <span class="mini-comment"># box is now [1, 2, 3, [4, 5]] — nested list</span>
+box.extend([4, 5])   <span class="mini-comment"># box is now [1, 2, 3, 4, 5]  — flat</span>
+
+<span class="mini-comment"># extend works on any iterable</span>
+box.extend("hi")     <span class="mini-comment"># → [..., 'h', 'i']  strings are iterable!</span>
+box.extend((6, 7))   <span class="mini-comment"># → [..., 6, 7]  tuples work too</span></div>`
+          },
+          {
+            label:"remove vs pop vs del — which to use when",
+            summary:"remove: delete by value. pop: delete by index and return it. del: delete by index, no return.",
+            body:`<p>Three different situations call for three different tools:</p>
+<div class="mini-example">lst = ['a', 'b', 'c', 'b', 'd']
+
+lst.remove('b')   <span class="mini-comment"># → ['a','c','b','d']  deletes FIRST 'b' found</span>
+                  <span class="mini-comment"># 🔥 ValueError if value not in list</span>
+
+val = lst.pop(1)  <span class="mini-comment"># → removes index 1, val='c', lst=['a','b','d']</span>
+                  <span class="mini-comment"># Use pop() when you need the removed value</span>
+
+del lst[0]        <span class="mini-comment"># → removes index 0, no return value</span>
+                  <span class="mini-comment"># Use del when you don't need the removed value</span></div>
+<p><strong>Safe remove</strong> — check first:</p>
+<div class="mini-example">if 'b' in lst:
+    lst.remove('b')   <span class="mini-comment"># won't crash</span></div>`
+          },
+          {
+            label:"sort() vs sorted() — and the key= parameter",
+            summary:"sort() changes the list. sorted() gives you a new one. key= controls what you sort by.",
+            body:`<p>The most important thing: <strong><code>lst.sort()</code> returns <code>None</code></strong>. This trips up nearly everyone at least once.</p>
+<div class="mini-example"><span class="bad"># WRONG — this is a classic mistake</span>
+result = my_list.sort()
+print(result)   <span class="mini-comment"># → None 😭</span>
+
+<span class="good"># RIGHT — sort in place and use the original variable</span>
+my_list.sort()
+print(my_list)  <span class="mini-comment"># → sorted list ✓</span>
+
+<span class="good"># Or use sorted() if you need a new list</span>
+result = sorted(my_list)  <span class="mini-comment"># original unchanged</span></div>
+<p>The <code>key</code> parameter accepts a function that extracts a "sort value" from each item:</p>
+<div class="mini-example">people = [("Alice", 30), ("Bob", 25), ("Carol", 35)]
+people.sort(key=lambda p: p[1])  <span class="mini-comment"># sort by age</span>
+<span class="mini-comment"># → [('Bob',25), ('Alice',30), ('Carol',35)]</span></div>`
+          }
+        ],
+        note:"Lists are mutable — all the methods above change the list in place (except sorted()). If you need the original preserved, make a copy first: copy = lst.copy() or copy = lst[:].",
+        quiz:{
+          q:'lst = [1, 2, 3]\nlst.append([4, 5])\nprint(len(lst))',
+          options:["5","4","3","2"],
+          answer:0,
+          explanation:"append adds ONE item — the entire list [4,5] — so lst becomes [1,2,3,[4,5]]. len([1,2,3,[4,5]]) = 4.",
+          walkthrough:"Before:  lst = [1, 2, 3]          len = 3\nAfter:   lst = [1, 2, 3, [4, 5]]  len = 4\n\nThe list [4,5] is ONE item — it happens to contain two things.\nIf you wanted len=5, you'd use extend([4,5]) instead."
+        }
+      }
+    ]
+  },
+
+  // ══════════════════════════════════ TUPLES
+  {
+    id:"tuples", label:"Tuples", emoji:"📦", color:"#c47ab8",
+    sections:[
+      {
+        title:"Packing & Unpacking",
+        code:[
+          ['comment','# ── Creating tuples (packing) ──'],
+          ['normal', 'point   = (10, 20)'],
+          ['normal', 'rgb     = (255, 128, 0)'],
+          ['normal', 'person  = ("Alice", 30, "London")'],
+          ['blank',  ''],
+          ['comment','# WARNING: a single-item tuple NEEDS a trailing comma'],
+          ['normal', 'not_tuple = (42)     # → just the int 42'],
+          ['normal', 'is_tuple  = (42,)    # → (42,) ← this is a tuple'],
+          ['normal', 'also_tuple = 42,     # parens are optional — comma makes it'],
+          ['blank',  ''],
+          ['comment','# ── Unpacking — assign tuple values to variables ──'],
+          ['normal', 'x, y = point         # x=10, y=20'],
+          ['normal', 'r, g, b = rgb        # r=255, g=128, b=0'],
+          ['normal', 'name, age, city = person'],
+          ['blank',  ''],
+          ['comment','# ── Starred unpacking — capture "the rest" ──'],
+          ['normal', 'first, *rest = [1, 2, 3, 4, 5]'],
+          ['normal', '# first=1, rest=[2,3,4,5]'],
+          ['blank',  ''],
+          ['normal', '*head, last = [1, 2, 3, 4, 5]'],
+          ['normal', '# head=[1,2,3,4], last=5'],
+          ['blank',  ''],
+          ['normal', 'first, *middle, last = [1, 2, 3, 4, 5]'],
+          ['normal', '# first=1, middle=[2,3,4], last=5'],
+          ['blank',  ''],
+          ['comment','# ── Practical uses ──'],
+          ['comment','# Swap two variables — no temp variable needed'],
+          ['normal', 'a, b = 5, 10'],
+          ['normal', 'a, b = b, a      # → a=10, b=5'],
+          ['blank',  ''],
+          ['comment','# Unpack from a function that returns multiple values'],
+          ['normal', 'def min_max(nums):'],
+          ['normal', '    return min(nums), max(nums)   # returns tuple'],
+          ['blank',  ''],
+          ['normal', 'lo, hi = min_max([3, 1, 9, 2, 7])'],
+          ['normal', '# lo=1, hi=9'],
+        ],
+        explain:[
+          {
+            label:"Why tuples exist — not just 'immutable lists'",
+            summary:"Tuples signal intent: this data belongs together and won't change.",
+            body:`<p>The practical reason to use a tuple over a list:</p>
+<p><strong>1. Intent:</strong> a tuple says "these values form a unit" — like (lat, lng) for a coordinate, or (r,g,b) for a colour. A list says "here's a collection of similar things I might add to or remove from".</p>
+<p><strong>2. Safety:</strong> Immutability means it can't be accidentally modified elsewhere in your code.</p>
+<p><strong>3. Hashability:</strong> Tuples can be used as <strong>dictionary keys</strong> or put in <strong>sets</strong>. Lists can't.</p>
+<div class="mini-example"><span class="mini-comment"># Tuples as dict keys — lists would crash here</span>
+grid = {}
+grid[(0, 0)] = "start"
+grid[(3, 4)] = "treasure"
+
+<span class="mini-comment"># Works because (0,0) is hashable — [0,0] is not</span></div>`
+          },
+          {
+            label:"Unpacking in for loops",
+            summary:"You can unpack tuples directly in for loops — very common with .items()",
+            body:`<p>When you iterate over a list of tuples, you can unpack each tuple directly in the loop header:</p>
+<div class="mini-example">coords = [(0,0), (1,2), (3,4)]
+
+<span class="mini-comment"># Without unpacking</span>
+for point in coords:
+    print(point[0], point[1])
+
+<span class="mini-comment"># With unpacking — cleaner</span>
+for x, y in coords:
+    print(x, y)
+
+<span class="mini-comment"># Dict .items() returns (key, value) tuples</span>
+d = {"a": 1, "b": 2}
+for key, value in d.items():
+    print(f"{key} = {value}")</div>`
+          },
+          {
+            label:"The _ convention — ignoring values you don't need",
+            summary:"Use _ as a variable name when you're unpacking but don't need that value.",
+            body:`<p>By convention, <code>_</code> is used for values you're deliberately ignoring:</p>
+<div class="mini-example">person = ("Alice", 30, "London", "Engineer")
+
+<span class="mini-comment"># Only want name and job, ignore age and city</span>
+name, _, _, job = person
+
+<span class="mini-comment"># Only want first and last from a list</span>
+first, *_, last = [1, 2, 3, 4, 5, 6]
+
+<span class="mini-comment"># Enumerate but only need index</span>
+for i, _ in enumerate(["a", "b", "c"]):
+    print(i)</div>`
+          }
+        ],
+        note:"You can index and slice tuples exactly like lists — t[0], t[1:3], etc. You just can't modify them afterwards. Tuples also support len(), in, count(), and index() methods.",
+        quiz:{
+          q:'a, *b, c = (10, 20, 30, 40, 50)\nprint(b)',
+          options:["[20, 30, 40]","(20, 30, 40)","[20, 30]","[30, 40, 50]"],
+          answer:0,
+          explanation:"a=10, c=50. The star captures everything in between as a LIST: [20,30,40].",
+          walkthrough:"Tuple:   (10, 20, 30, 40, 50)\n          ↑            ↑\n          a             c\n             └──────┘\n             *b = [20, 30, 40]\n\nKey point: *b always becomes a LIST, even when unpacking from a tuple."
+        }
+      }
+    ]
+  },
+
+  // ══════════════════════════════════ DICTS
+  {
+    id:"dicts", label:"Dictionaries", emoji:"📖", color:"#e87d52",
+    sections:[
+      {
+        title:"Keys, Values & KeyError",
+        code:[
+          ['comment','# ── Creating a dictionary ──'],
+          ['normal', 'user = {"name": "Alice", "age": 30, "city": "London"}'],
+          ['blank',  ''],
+          ['comment','# ── Viewing keys, values, items ──'],
+          ['normal', "user.keys()    # → dict_keys(['name', 'age', 'city'])"],
+          ['normal', "user.values()  # → dict_values(['Alice', 30, 'London'])"],
+          ['normal', "user.items()   # → dict_items([('name','Alice'),('age',30),...])"],
+          ['blank',  ''],
+          ['comment','# ── Accessing values ──'],
+          ['normal', "user['name']           # → 'Alice'"],
+          ['normal', "user['phone']          # 🔥 KeyError — key does not exist"],
+          ['blank',  ''],
+          ['comment','# Safe access with .get()'],
+          ['normal', "user.get('name')           # → 'Alice'"],
+          ['normal', "user.get('phone')          # → None   (no crash)"],
+          ['normal', "user.get('phone', 'N/A')   # → 'N/A'  (custom default)"],
+          ['blank',  ''],
+          ['comment','# ── Looping ──'],
+          ['normal', "for key in user:             # loops over keys by default"],
+          ['normal', "    print(key)"],
+          ['blank',  ''],
+          ['normal', "for key, val in user.items():  # unpack key & value"],
+          ['normal', '    print(f"{key}: {val}")'],
+          ['blank',  ''],
+          ['comment','# ── Adding & updating ──'],
+          ['normal', "user['email'] = 'alice@example.com'  # add new key"],
+          ['normal', "user['age'] = 31                     # update existing"],
+          ['normal', "user.update({'age': 32, 'job': 'dev'})  # multiple at once"],
+          ['blank',  ''],
+          ['comment','# ── Removing ──'],
+          ['normal', "del user['city']          # removes key (KeyError if missing)"],
+          ['normal', "val = user.pop('age')     # removes & returns value"],
+          ['normal', "val = user.pop('x', None) # safe pop — default if missing"],
+          ['blank',  ''],
+          ['comment','# ── Useful patterns ──'],
+          ['normal', "'name' in user         # → True  (check key exists)"],
+          ['normal', "len(user)              # → number of key-value pairs"],
+          ['normal', "user.setdefault('score', 0)  # add key ONLY if not present"],
+        ],
+        explain:[
+          {
+            label:"Why KeyError happens and how to avoid it",
+            summary:"Accessing a missing key with [] crashes. .get() never crashes.",
+            body:`<p>A <code>KeyError</code> is Python telling you: "you asked for a key that doesn't exist in this dictionary." It's one of the most common runtime errors.</p>
+<div class="mini-example">config = {"host": "localhost", "port": 5432}
+
+<span class="bad"># This crashes if key is missing</span>
+timeout = config["timeout"]   <span class="mini-comment"># 🔥 KeyError</span>
+
+<span class="good"># This never crashes</span>
+timeout = config.get("timeout")          <span class="mini-comment"># → None</span>
+timeout = config.get("timeout", 30)      <span class="mini-comment"># → 30 (sensible default)</span>
+
+<span class="mini-comment"># Or check first</span>
+if "timeout" in config:
+    timeout = config["timeout"]</div>
+<p><strong>Rule of thumb:</strong> use <code>[]</code> only when you're certain the key exists. Use <code>.get()</code> when the key might be absent.</p>`
+          },
+          {
+            label:"dict.items() — the most useful dict method",
+            summary:"items() gives you (key, value) pairs you can unpack directly in a loop.",
+            body:`<p><code>dict.items()</code> is what you'll reach for most often when processing a dictionary. It returns (key, value) tuples that you can unpack immediately:</p>
+<div class="mini-example">scores = {"Alice": 95, "Bob": 87, "Carol": 92}
+
+<span class="mini-comment"># Find everyone who scored above 90</span>
+high = {name: score for name, score in scores.items() if score > 90}
+<span class="mini-comment"># → {'Alice': 95, 'Carol': 92}</span>
+
+<span class="mini-comment"># Build a new dict with modified values</span>
+curved = {name: score + 5 for name, score in scores.items()}
+<span class="mini-comment"># → {'Alice': 100, 'Bob': 92, 'Carol': 97}</span></div>
+<p>Note: <code>.keys()</code> and <code>.values()</code> return <strong>view objects</strong> — they reflect changes to the dictionary in real time. Convert with <code>list()</code> if you need a snapshot.</p>`
+          },
+          {
+            label:"setdefault and the counter pattern",
+            summary:"setdefault() and defaultdict are how you build frequency counters cleanly.",
+            body:`<p><code>setdefault(key, default)</code> returns the value if the key exists, or sets it to the default and returns that. Useful for building dictionaries incrementally:</p>
+<div class="mini-example">words = ["apple","banana","apple","cherry","banana","apple"]
+
+<span class="mini-comment"># Count occurrences — setdefault approach</span>
+counts = {}
+for w in words:
+    counts.setdefault(w, 0)
+    counts[w] += 1
+<span class="mini-comment"># → {'apple':3, 'banana':2, 'cherry':1}</span>
+
+<span class="mini-comment"># Cleaner: use dict.get with default 0</span>
+counts = {}
+for w in words:
+    counts[w] = counts.get(w, 0) + 1
+
+<span class="mini-comment"># Cleanest: use collections.Counter</span>
+from collections import Counter
+counts = Counter(words)
+<span class="mini-comment"># → Counter({'apple':3, 'banana':2, 'cherry':1})</span></div>`
+          }
+        ],
+        note:"Dictionaries maintain insertion order in Python 3.7+. So dict.keys() will always give you keys in the order you added them — a subtle but useful guarantee.",
+        quiz:{
+          q:'d = {"a": 1, "b": 2}\nresult = d.get("c", 99)\nd["b"] = d.get("b", 0) + 10\nprint(result, d["b"])',
+          options:["99 12","None 12","99 2","0 12"],
+          answer:0,
+          explanation:"get('c',99) → 99 (key missing, returns default). d['b'] = 2+10 = 12.",
+          walkthrough:"Line 1: d = {'a':1, 'b':2}\nLine 2: 'c' not in d → .get returns default 99 → result = 99\nLine 3: d.get('b',0) = 2 (key exists) → 2+10=12 → d['b'] = 12\nLine 4: print(99, 12)\nAnswer: 99 12"
+        }
+      }
+    ]
+  },
+
+  // ══════════════════════════════════ SETS
+  {
+    id:"sets", label:"Sets", emoji:"🔵", color:"#6a9de8",
+    sections:[
+      {
+        title:"Methods & Set Math",
+        code:[
+          ['comment','# ── Creating sets ──'],
+          ['normal', 's = {1, 2, 3, 4}'],
+          ['normal', 'empty = set()        # NOT {} — that creates an empty dict'],
+          ['normal', 's2 = set([1,2,2,3,3,3])  # → {1,2,3} (from list, duplicates gone)'],
+          ['blank',  ''],
+          ['comment','# ── add, discard, remove ──'],
+          ['normal', 's.add(5)       # → {1,2,3,4,5}'],
+          ['normal', 's.add(3)       # → {1,2,3,4,5}  duplicate silently ignored'],
+          ['normal', 's.discard(3)   # → {1,2,4,5}  no error if element missing'],
+          ['normal', 's.remove(99)   # 🔥 KeyError if missing  (unlike discard)'],
+          ['blank',  ''],
+          ['comment','# ── Membership test (sets are O(1) — much faster than lists) ──'],
+          ['normal', '3 in s         # → True'],
+          ['normal', '99 in s        # → False'],
+          ['blank',  ''],
+          ['comment','# ── Set mathematics ──'],
+          ['normal', 'a = {1, 2, 3, 4, 5}'],
+          ['normal', 'b = {4, 5, 6, 7, 8}'],
+          ['blank',  ''],
+          ['normal', 'a | b          # Union         → {1,2,3,4,5,6,7,8}  all elements'],
+          ['normal', 'a & b          # Intersection  → {4,5}              in BOTH'],
+          ['normal', 'a - b          # Difference    → {1,2,3}            in a NOT b'],
+          ['normal', 'b - a          # Difference    → {6,7,8}            in b NOT a'],
+          ['normal', 'a ^ b          # Symmetric diff→ {1,2,3,6,7,8}     in ONE not both'],
+          ['blank',  ''],
+          ['comment','# ── Subset / superset checks ──'],
+          ['normal', '{1,2} <= {1,2,3,4}   # → True  ({1,2} is a subset)'],
+          ['normal', '{1,2,3,4} >= {1,2}   # → True  ({1,2,3,4} is a superset)'],
+          ['blank',  ''],
+          ['comment','# ── Common practical patterns ──'],
+          ['comment','# 1. Remove duplicates from a list'],
+          ['normal', 'unique = list(set([1,2,2,3,3,3]))  # → [1,2,3]'],
+          ['blank',  ''],
+          ['comment','# 2. Find items in one list but not another'],
+          ['normal', 'have  = {"apple","banana","cherry"}'],
+          ['normal', 'need  = {"banana","date","elderberry"}'],
+          ['normal', 'buy   = need - have    # → {"date","elderberry"}'],
+          ['blank',  ''],
+          ['comment','# 3. Fast membership test on large data'],
+          ['normal', 'valid_users = set(database_ids)   # O(1) lookup'],
+          ['normal', 'if user_id in valid_users: ...    # fast even with 1M items'],
+        ],
+        explain:[
+          {
+            label:"Why sets are fast for membership tests",
+            summary:"Sets use hashing — lookup is O(1) regardless of size. Lists are O(n).",
+            body:`<p>When you write <code>x in my_list</code>, Python checks every element one by one until it finds <code>x</code> or runs out. If the list has 1 million items, that could mean 1 million checks.</p>
+<p>With <code>x in my_set</code>, Python computes a hash of <code>x</code> and jumps directly to the right bucket. It's like an index. Doesn't matter if the set has 10 or 10 million items — the lookup takes about the same time.</p>
+<div class="mini-example"><span class="mini-comment"># If you check membership repeatedly, convert to set first</span>
+banned = ["spam@x.com", "bad@y.com", "evil@z.com"]   <span class="mini-comment"># list</span>
+banned_set = set(banned)                              <span class="mini-comment"># set</span>
+
+email in banned      <span class="mini-comment"># O(n) — slow for large lists</span>
+email in banned_set  <span class="mini-comment"># O(1) — fast regardless of size</span></div>`
+          },
+          {
+            label:"Set operations visualised — what each one actually does",
+            summary:"Union=everything, Intersection=overlap, Difference=exclusive, Symmetric=non-overlap",
+            body:`<p>Think of two overlapping circles (a Venn diagram):</p>
+<div class="mini-example">a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+<span class="mini-comment">#     a only  |  both  |  b only</span>
+<span class="mini-comment">#    {1, 2}   | {3, 4} |  {5, 6}</span>
+
+a | b  <span class="mini-comment"># UNION:         {1,2,3,4,5,6}  — everything in either circle</span>
+a & b  <span class="mini-comment"># INTERSECTION:  {3,4}          — only the overlapping middle</span>
+a - b  <span class="mini-comment"># DIFFERENCE:    {1,2}          — left circle only (not overlap)</span>
+b - a  <span class="mini-comment"># DIFFERENCE:    {5,6}          — right circle only</span>
+a ^ b  <span class="mini-comment"># SYMMETRIC:     {1,2,5,6}      — both circles MINUS the overlap</span></div>
+<p>Symmetric difference is "everything that's exclusive to one side" — useful for finding what changed between two states.</p>`
+          },
+          {
+            label:"What can and can't go in a set",
+            summary:"Only hashable (immutable) types. No lists or dicts — but tuples are fine.",
+            body:`<p>Sets require their elements to be <strong>hashable</strong> — meaning Python can compute a stable numeric hash for them. Mutable objects (lists, dicts, sets) are not hashable.</p>
+<div class="mini-example">s = set()
+
+s.add(42)          <span class="good">✓</span>  <span class="mini-comment">ints are hashable</span>
+s.add("hello")     <span class="good">✓</span>  <span class="mini-comment">strings are hashable</span>
+s.add((1, 2, 3))   <span class="good">✓</span>  <span class="mini-comment">tuples (of hashable items) are hashable</span>
+s.add([1, 2, 3])   <span class="bad">✗</span>  <span class="mini-comment">TypeError: unhashable type: 'list'</span>
+s.add({"a": 1})    <span class="bad">✗</span>  <span class="mini-comment">TypeError: unhashable type: 'dict'</span></div>
+<p>This is the same reason lists can't be dictionary keys, but tuples can.</p>`
+          }
+        ],
+        note:"Sets are unordered — {3,1,2} might print as {1,2,3} or any order. Don't rely on order. Don't index a set (s[0] will crash). If you need ordered unique items, use dict.fromkeys() or a sorted list.",
+        quiz:{
+          q:'a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(len(a ^ b))',
+          options:["4","2","6","8"],
+          answer:0,
+          explanation:"a^b = symmetric difference = {1,2,5,6} (in one but not both). len({1,2,5,6}) = 4.",
+          walkthrough:"a ^ b means: elements in a OR b but NOT both.\n\nIn a only:   {1, 2}  (3 and 4 are in both, excluded)\nIn b only:   {5, 6}  (3 and 4 are in both, excluded)\nResult:      {1, 2, 5, 6}\nLength:      4"
+        }
+      }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+const state = {
+  topicIdx: 0,
+  sectionIdx: 0,
+  completed: new Set(),
+  quizAnswered: {},
+  openExplains: {}   // track which explain accordions are open
+};
+
+function sk(ti,si){ return `${ti}-${si}`; }
+function totalSections(){ return topics.reduce((a,t)=>a+t.sections.length,0); }
+
+function updateProgress(){
+  const pct = Math.round(state.completed.size/totalSections()*100);
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+}
+
+// ─────────────────────────────────────────────
+//  SIDEBAR
+// ─────────────────────────────────────────────
+function renderSidebar(){
+  const aside = document.getElementById('sidebar');
+  aside.innerHTML='';
+  topics.forEach((t,ti)=>{
+    const btn = document.createElement('button');
+    btn.className='topic-btn'+(ti===state.topicIdx?' active':'');
+    btn.style.color = ti===state.topicIdx ? t.color : '';
+    btn.style.borderLeftColor = ti===state.topicIdx ? t.color : 'transparent';
+    btn.innerHTML=`<span>${t.emoji}</span><span>${t.label}</span>`;
+    btn.addEventListener('click',()=>{ state.topicIdx=ti; state.sectionIdx=0; render(); });
+    aside.appendChild(btn);
+
+    if(t.sections.length>1){
+      const subs=document.createElement('div');
+      subs.className='sub-sections'+(ti===state.topicIdx?' open':'');
+      t.sections.forEach((s,si)=>{
+        const key=sk(ti,si);
+        const sb=document.createElement('button');
+        sb.className='sub-btn'+(ti===state.topicIdx&&si===state.sectionIdx?' active':'');
+        sb.innerHTML=`<span style="color:${state.completed.has(key)?'#5bc8af':'#333'}">${state.completed.has(key)?'✓':'○'}</span>${s.title}`;
+        sb.addEventListener('click',(e)=>{ e.stopPropagation(); state.topicIdx=ti; state.sectionIdx=si; render(); });
+        subs.appendChild(sb);
+      });
+      aside.appendChild(subs);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────
+//  CODE RENDERER
+// ─────────────────────────────────────────────
+function renderCode(lines){
+  return lines.map(([type,text])=>{
+    if(type==='blank') return '<div style="height:6px"></div>';
+    const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if(type==='comment') return `<div class="line-comment">${e}</div>`;
+    const ci = e.search(/\s{2,}#/);
+    if(ci!==-1){
+      return `<div>${e.slice(0,ci)}<span class="line-comment">${e.slice(ci)}</span></div>`;
+    }
+    return `<div>${e}</div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+//  EXPLAIN PANELS
+// ─────────────────────────────────────────────
+function renderExplains(explains, sectionKey){
+  if(!explains||!explains.length) return '';
+  return `<div class="explain-panel">${
+    explains.map((ex,ei)=>{
+      const ekey = `${sectionKey}-${ei}`;
+      const isOpen = !!state.openExplains[ekey];
+      return `
+        <div class="explain-row">
+          <button class="explain-toggle${isOpen?' open':''}" data-ekey="${ekey}">
+            <span class="arrow">▶</span> Explain
+          </button>
+          <div class="explain-summary">${ex.label}</div>
+        </div>
+        <div class="explain-body${isOpen?' open':''}" data-body="${ekey}">
+          ${ex.body}
+        </div>`;
+    }).join('')
+  }</div>`;
+}
+
+// ─────────────────────────────────────────────
+//  MAIN RENDER
+// ─────────────────────────────────────────────
+function renderMain(){
+  const topic   = topics[state.topicIdx];
+  const section = topic.sections[state.sectionIdx];
+  const key     = sk(state.topicIdx, state.sectionIdx);
+  const qstate  = state.quizAnswered[key];
+  const main    = document.getElementById('main');
+
+  // tabs
+  let tabsHTML='';
+  if(topic.sections.length>1){
+    tabsHTML=`<div class="section-tabs">${topic.sections.map((s,si)=>`
+      <button class="tab-btn" data-si="${si}"
+        style="border:1px solid ${si===state.sectionIdx?topic.color:'var(--border)'}; color:${si===state.sectionIdx?'#0c0c10':'var(--muted)'}; background:${si===state.sectionIdx?topic.color:'transparent'}">
+        ${s.title}
+      </button>`).join('')}</div>`;
+  }
+
+  // quiz options
+  const optHTML = section.quiz.options.map((opt,oi)=>{
+    let cls='opt-btn';
+    if(qstate){
+      if(oi===section.quiz.answer) cls+=' correct';
+      else if(oi===qstate.selected&&!qstate.correct) cls+=' wrong';
+    }
+    return `<button class="${cls}" data-oi="${oi}" ${qstate?'disabled':''}>${opt}</button>`;
+  }).join('');
+
+  // quiz result
+  const resultHTML = qstate ? `
+    <div class="quiz-result show ${qstate.correct?'ok':'fail'}">
+      ${qstate.correct?'✓ Correct.':'✗ Wrong.'}
+      <span class="expl">${section.quiz.explanation}</span>
+      ${section.quiz.walkthrough?`<span class="walkthrough">${section.quiz.walkthrough.replace(/\n/g,'<br>')}</span>`:''}
+    </div>` : `<div class="quiz-result"></div>`;
+
+  const isFirst = state.topicIdx===0 && state.sectionIdx===0;
+  const lastT   = topics[topics.length-1];
+  const isLast  = state.topicIdx===topics.length-1 && state.sectionIdx===lastT.sections.length-1;
+
+  main.innerHTML=`
+    ${tabsHTML}
+    <div class="topic-header">
+      <div class="topic-emoji">${topic.emoji}</div>
+      <div>
+        <div class="topic-title" style="color:${topic.color}">${topic.label}</div>
+        <div class="section-subtitle">${section.title}</div>
+      </div>
+    </div>
+
+    <div class="code-block"><pre>${renderCode(section.code)}</pre></div>
+
+    ${renderExplains(section.explain, key)}
+
+    <div class="note-box" style="border-left-color:${topic.color}">
+      <strong style="color:${topic.color}">⚠ Note: </strong>${section.note}
+    </div>
+
+    <div class="quiz-box">
+      <div class="quiz-label">Quick Check</div>
+      <div class="quiz-q">${section.quiz.q}</div>
+      <div class="options">${optHTML}</div>
+      ${resultHTML}
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn prev" id="prevBtn" ${isFirst?'disabled':''}>← Previous</button>
+      <button class="nav-btn next" id="nextBtn" style="background:${topic.color}">
+        ${isLast?'Done ✓':'Next →'}
+      </button>
+    </div>
+  `;
+
+  // ── events ──
+  main.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{ state.sectionIdx=+btn.dataset.si; render(); });
+  });
+
+  main.querySelectorAll('.explain-toggle').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const ekey=btn.dataset.ekey;
+      state.openExplains[ekey]=!state.openExplains[ekey];
+      btn.classList.toggle('open', !!state.openExplains[ekey]);
+      main.querySelector(`.explain-body[data-body="${ekey}"]`).classList.toggle('open', !!state.openExplains[ekey]);
+    });
+  });
+
+  main.querySelectorAll('.opt-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(state.quizAnswered[key]) return;
+      const oi=+btn.dataset.oi;
+      const correct=oi===section.quiz.answer;
+      state.quizAnswered[key]={selected:oi,correct};
+      if(correct) state.completed.add(key);
+      render();
+    });
+  });
+
+  document.getElementById('prevBtn').addEventListener('click',()=>{
+    if(state.sectionIdx>0){ state.sectionIdx--; }
+    else if(state.topicIdx>0){ state.topicIdx--; state.sectionIdx=topics[state.topicIdx].sections.length-1; }
+    render();
+  });
+
+  document.getElementById('nextBtn').addEventListener('click',()=>{
+    const t=topics[state.topicIdx];
+    if(state.sectionIdx<t.sections.length-1){ state.sectionIdx++; }
+    else if(state.topicIdx<topics.length-1){ state.topicIdx++; state.sectionIdx=0; }
+    render();
+  });
+}
+
+function render(){
+  renderSidebar();
+  renderMain();
+  updateProgress();
+  document.getElementById('main').scrollTop=0;
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Foundations</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a25;
+    --border: #2a2a3a;
+    --accent: #7c6aff;
+    --accent2: #ff6a6a;
+    --accent3: #6affd4;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --code-bg: #0d0d1a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    margin-bottom: 60px;
+    padding-top: 20px;
+  }
+
+  .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 400;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* PROGRESS */
+  .progress-bar-wrap {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* NAV TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 40px;
+    background: var(--surface);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+
+  .tab:hover { color: var(--text); background: var(--surface2); }
+  .tab.active { background: var(--accent); color: #fff; font-weight: 600; }
+  .tab.done { color: var(--accent3); }
+  .tab.done::after { content: ' ✓'; }
+
+  /* SECTION */
+  .section { display: none; animation: fadeIn 0.3s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .section-intro {
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+    max-width: 650px;
+  }
+
+  /* CONCEPT CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge-purple { background: rgba(124,106,255,0.15); color: var(--accent); }
+  .badge-red { background: rgba(255,106,106,0.15); color: var(--accent2); }
+  .badge-green { background: rgba(106,255,212,0.15); color: var(--accent3); }
+
+  .card-text {
+    color: var(--muted);
+    line-height: 1.7;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  /* CODE BLOCKS */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  pre::before {
+    content: 'Python';
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .kw { color: #c792ea; }       /* keywords */
+  .fn { color: #82aaff; }       /* functions */
+  .st { color: #c3e88d; }       /* strings */
+  .nm { color: #f78c6c; }       /* numbers */
+  .cm { color: #546e7a; font-style: italic; } /* comments */
+  .op { color: #89ddff; }       /* operators */
+  .var { color: var(--text); }  /* variables */
+  .bl { color: #ff6a6a; }       /* booleans */
+  .out { color: var(--accent3); } /* output */
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: rgba(124,106,255,0.05);
+    padding: 16px 20px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .callout.warn {
+    border-color: var(--accent2);
+    background: rgba(255,106,106,0.05);
+  }
+
+  .callout.tip {
+    border-color: var(--accent3);
+    background: rgba(106,255,212,0.05);
+  }
+
+  .callout strong { color: var(--text); }
+
+  /* QUIZ */
+  .quiz {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 32px;
+  }
+
+  .quiz-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .quiz-q {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-opt {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+
+  .quiz-opt:hover:not(:disabled) { border-color: var(--accent); background: rgba(124,106,255,0.05); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(106,255,212,0.08); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: var(--accent2); background: rgba(255,106,106,0.08); color: var(--accent2); }
+
+  .quiz-feedback {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+    display: none;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-radius: 8px;
+  }
+
+  .quiz-feedback.show { display: block; }
+
+  /* NEXT BUTTON */
+  .btn-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 32px;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: -0.2px;
+  }
+
+  .btn-next:hover { background: #9580ff; transform: translateY(-1px); }
+
+  /* COMPLETION */
+  .completion {
+    text-align: center;
+    padding: 60px 20px;
+    display: none;
+  }
+
+  .completion.show { display: block; }
+
+  .completion-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .completion h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent3), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .completion p {
+    color: var(--muted);
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  /* TYPE TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    margin: 16px 0;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,42,58,0.5);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  td:first-child { color: var(--accent3); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+
+  .summary-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .summary-item strong {
+    display: block;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .summary-item span { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="label">Phase 1 — Python Foundations</span>
+    <h1>Learn Python<br>Properly.</h1>
+    <p class="subtitle">No hand-holding, no fluff. Four concepts that actually matter before you write a single "real" program.</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-text" id="progressText">0 / 4 complete</span>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="showSection(0)">01 Interpreter</button>
+    <button class="tab" onclick="showSection(1)">02 Indentation</button>
+    <button class="tab" onclick="showSection(2)">03 Data Types</button>
+    <button class="tab" onclick="showSection(3)">04 Control Flow</button>
+  </div>
+
+  <!-- SECTION 0: INTERPRETER VS SCRIPT -->
+  <div class="section active" id="sec0">
+    <div class="section-title">Interpreter vs Script Mode</div>
+    <p class="section-intro">Before writing any real code you need to understand <em>where</em> your code runs and why that matters. Most beginners skip this. Most beginners also spend 30 minutes confused about why their "program" disappeared the moment they closed a window.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">REPL</span> Interpreter / Interactive Mode</div>
+      <p class="card-text">You type one line → Python executes it immediately → you see the result. Great for testing ideas, checking values, or just messing around. Python gives you a <strong>>> prompt</strong>. Run it by typing <code>python</code> or <code>python3</code> in your terminal.</p>
+      <pre><span class="cm"># In your terminal: python3</span>
+<span class="cm"># Then you type line by line:</span>
+
+<span class="op">>>></span> <span class="nm">2</span> <span class="op">+</span> <span class="nm">3</span>
+<span class="out">5</span>
+<span class="op">>>></span> <span class="fn">print</span>(<span class="st">"hello"</span>)
+<span class="out">hello</span>
+<span class="op">>>></span> x <span class="op">=</span> <span class="nm">10</span>
+<span class="op">>>></span> x <span class="op">*</span> <span class="nm">5</span>
+<span class="out">50</span></pre>
+      <div class="callout">
+        <strong>Key thing:</strong> In interactive mode, just typing an expression (like <code>2 + 3</code>) shows the result automatically. In a script, it won't — you'd need <code>print()</code>. This trips people up constantly.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">FILE</span> Script Mode</div>
+      <p class="card-text">You write all your code in a <code>.py</code> file, then run the whole file at once. This is how real programs work. Python reads it top to bottom, executes everything, then stops.</p>
+      <pre><span class="cm"># my_program.py — run with: python3 my_program.py</span>
+
+name <span class="op">=</span> <span class="st">"Alice"</span>
+age <span class="op">=</span> <span class="nm">25</span>
+
+<span class="fn">print</span>(<span class="st">f"Name: </span><span class="op">{</span>name<span class="op">}</span><span class="st">"</span>)
+<span class="fn">print</span>(<span class="st">f"Age: </span><span class="op">{</span>age<span class="op">}</span><span class="st">"</span>)
+
+<span class="cm"># Output when you run it:</span>
+<span class="out"># Name: Alice</span>
+<span class="out"># Age: 25</span></pre>
+      <div class="callout warn">
+        <strong>Note:</strong> In script mode, expressions don't auto-print. <code>2 + 3</code> on its own line does absolutely nothing visible. You must use <code>print()</code> explicitly.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">When to use which?</div>
+      <table>
+        <tr><th>Situation</th><th>Use</th></tr>
+        <tr><td>Experimenting / testing</td><td>Interpreter</td></tr>
+        <tr><td>Building real programs</td><td>Script (.py file)</td></tr>
+        <tr><td>Learning a new concept quickly</td><td>Interpreter</td></tr>
+        <tr><td>Anything you want to save</td><td>Script</td></tr>
+      </table>
+    </div>
+
+    <div class="quiz" id="quiz0">
+      <div class="quiz-title">// Quick Check</div>
+      <div class="quiz-q">You type <code>100 / 4</code> in a Python script file and run it. What happens?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(0,0,false,'Wrong. No <code>print()</code>, no output. The calculation happens internally but you see nothing.')">It prints 25.0</button>
+        <button class="quiz-opt" onclick="answer(0,1,true,'Exactly. Without <code>print()</code>, expressions in script mode produce no visible output. The calculation still happens — you just never see the result.')">Nothing is displayed</button>
+        <button class="quiz-opt" onclick="answer(0,2,false,'No. Python executes it fine, it just outputs nothing because there\'s no print().')">Python throws an error</button>
+      </div>
+      <div class="quiz-feedback" id="qf0"></div>
+    </div>
+
+    <button class="btn-next" onclick="nextSection(0)">Next: Indentation →</button>
+  </div>
+
+  <!-- SECTION 1: INDENTATION -->
+  <div class="section" id="sec1">
+    <div class="section-title">Indentation Rules</div>
+    <p class="section-intro">Most languages use curly braces <code>{}</code> to group code blocks. Python uses whitespace instead. This isn't a quirky preference — it's enforced by the language. Get it wrong and your code won't run.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">RULE</span> The Golden Rule</div>
+      <p class="card-text">Use <strong>4 spaces</strong> per indentation level. Most editors do this automatically when you press Tab. The only actual rule is: <em>be consistent</em>. You can technically use 2 spaces or even tabs, but you absolutely cannot mix them.</p>
+      <pre><span class="cm"># CORRECT — 4 spaces each level</span>
+<span class="kw">if</span> <span class="nm">True</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"level 1"</span>)      <span class="cm"># 4 spaces</span>
+    <span class="kw">if</span> <span class="nm">True</span><span class="op">:</span>
+        <span class="fn">print</span>(<span class="st">"level 2"</span>)  <span class="cm"># 8 spaces</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-red">WRONG</span> Common Mistakes</div>
+      <pre><span class="cm"># ERROR: mixing tabs and spaces</span>
+<span class="kw">if</span> <span class="nm">True</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"spaces here"</span>)    <span class="cm"># 4 spaces</span>
+	<span class="fn">print</span>(<span class="st">"tab here"</span>)       <span class="cm"># TAB — CRASH</span>
+
+<span class="cm"># ERROR: wrong amount of indentation</span>
+<span class="kw">if</span> <span class="nm">True</span><span class="op">:</span>
+  <span class="fn">print</span>(<span class="st">"2 spaces"</span>)       <span class="cm"># fine, BUT</span>
+    <span class="fn">print</span>(<span class="st">"4 spaces"</span>)     <span class="cm"># INCONSISTENT — crash</span>
+
+<span class="cm"># ERROR: missing indentation entirely</span>
+<span class="kw">if</span> <span class="nm">True</span><span class="op">:</span>
+<span class="fn">print</span>(<span class="st">"no indent"</span>)       <span class="cm"># IndentationError</span></pre>
+      <div class="callout warn">
+        <strong>Real talk:</strong> Python will throw an <code>IndentationError</code> and refuse to run. It's not forgiving. Set your editor to "insert spaces on Tab" and this problem disappears entirely.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">DEMO</span> What Indentation Actually Does</div>
+      <p class="card-text">Indentation tells Python which code belongs inside a block. This isn't just style — it defines the structure of your program.</p>
+      <pre><span class="var">score</span> <span class="op">=</span> <span class="nm">85</span>
+
+<span class="kw">if</span> score <span class="op">>=</span> <span class="nm">50</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"inside the if — only runs if score >= 50"</span>)
+    <span class="fn">print</span>(<span class="st">"also inside the if"</span>)
+
+<span class="fn">print</span>(<span class="st">"outside the if — always runs"</span>)
+
+<span class="cm"># Output:</span>
+<span class="out"># inside the if — only runs if score >= 50</span>
+<span class="out"># also inside the if</span>
+<span class="out"># outside the if — always runs</span></pre>
+    </div>
+
+    <div class="quiz" id="quiz1">
+      <div class="quiz-title">// Quick Check</div>
+      <div class="quiz-q">Which of these will cause a Python error?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(1,0,false,'4 spaces consistently is exactly right.')">Using 4 spaces consistently throughout</button>
+        <button class="quiz-opt" onclick="answer(1,1,false,'2 spaces consistently is fine — unconventional, but Python accepts it.')">Using 2 spaces consistently throughout</button>
+        <button class="quiz-opt" onclick="answer(1,2,true,'Mixing tabs and spaces is the fastest way to make Python hate you. Python 3 explicitly raises a TabError for this.')">Mixing tabs in some lines and spaces in others</button>
+      </div>
+      <div class="quiz-feedback" id="qf1"></div>
+    </div>
+
+    <button class="btn-next" onclick="nextSection(1)">Next: Data Types →</button>
+  </div>
+
+  <!-- SECTION 2: DATA TYPES -->
+  <div class="section" id="sec2">
+    <div class="section-title">Data Types</div>
+    <p class="section-intro">Everything in Python has a type. Python is "dynamically typed" — meaning you don't declare types explicitly, Python figures it out. That doesn't mean types don't matter. It means the errors you get when you confuse them are more confusing.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">INT</span> Integers — whole numbers</div>
+      <pre><span class="var">age</span> <span class="op">=</span> <span class="nm">25</span>
+<span class="var">score</span> <span class="op">=</span> <span class="op">-</span><span class="nm">10</span>
+<span class="var">big</span> <span class="op">=</span> <span class="nm">1_000_000</span>    <span class="cm"># underscores for readability — totally valid</span>
+
+<span class="fn">print</span>(<span class="fn">type</span>(age))   <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="nm">10</span> <span class="op">//</span> <span class="nm">3</span>)      <span class="cm"># 3  ← floor division (drops remainder)</span>
+<span class="fn">print</span>(<span class="nm">10</span> <span class="op">%</span> <span class="nm">3</span>)       <span class="cm"># 1  ← modulo (remainder only)</span>
+<span class="fn">print</span>(<span class="nm">2</span> <span class="op">**</span> <span class="nm">8</span>)       <span class="cm"># 256 ← exponentiation</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">FLOAT</span> Floats — decimal numbers</div>
+      <pre><span class="var">price</span> <span class="op">=</span> <span class="nm">9.99</span>
+<span class="var">pi</span> <span class="op">=</span> <span class="nm">3.14159</span>
+
+<span class="fn">print</span>(<span class="nm">0.1</span> <span class="op">+</span> <span class="nm">0.2</span>)   <span class="cm"># 0.30000000000000004 ← welcome to floating point</span>
+
+<span class="cm"># Convert between int and float:</span>
+<span class="fn">print</span>(<span class="fn">int</span>(<span class="nm">9.9</span>))    <span class="cm"># 9   ← truncates, does NOT round</span>
+<span class="fn">print</span>(<span class="fn">float</span>(<span class="nm">5</span>))    <span class="cm"># 5.0</span></pre>
+      <div class="callout warn">
+        <strong>0.1 + 0.2 ≠ 0.3 exactly.</strong> This is a floating-point precision issue that exists in basically every programming language. For money/finance, use the <code>decimal</code> module instead of floats.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">COMPLEX</span> Complex numbers — with imaginary parts</div>
+      <p class="card-text">You'll rarely use these unless you're doing signal processing, maths, or physics. Python supports them natively using <code>j</code> (not <code>i</code> like in maths).</p>
+      <pre><span class="var">z</span> <span class="op">=</span> <span class="nm">3</span> <span class="op">+</span> <span class="nm">4j</span>
+<span class="fn">print</span>(z.real)    <span class="cm"># 3.0</span>
+<span class="fn">print</span>(z.imag)    <span class="cm"># 4.0</span>
+<span class="fn">print</span>(<span class="fn">abs</span>(z))     <span class="cm"># 5.0  ← magnitude</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">STR</span> Strings — text</div>
+      <p class="card-text">Text in Python is wrapped in single or double quotes — both work, pick one and be consistent. Strings are <em>immutable</em> — once created, you can't change individual characters.</p>
+      <pre><span class="var">name</span> <span class="op">=</span> <span class="st">"Alice"</span>
+<span class="var">greeting</span> <span class="op">=</span> <span class="st">'Hello'</span>
+
+<span class="cm"># f-strings — the modern way to embed variables</span>
+<span class="fn">print</span>(<span class="st">f"</span><span class="op">{</span>greeting<span class="op">}</span><span class="st">, </span><span class="op">{</span>name<span class="op">}</span><span class="st">!"</span>)   <span class="cm"># Hello, Alice!</span>
+
+<span class="cm"># Common string operations</span>
+<span class="fn">print</span>(name.<span class="fn">upper</span>())           <span class="cm"># ALICE</span>
+<span class="fn">print</span>(name.<span class="fn">lower</span>())           <span class="cm"># alice</span>
+<span class="fn">print</span>(<span class="fn">len</span>(name))              <span class="cm"># 5</span>
+<span class="fn">print</span>(name[<span class="nm">0</span>])               <span class="cm"># A  ← indexing starts at 0</span>
+<span class="fn">print</span>(name[<span class="op">-</span><span class="nm">1</span>])              <span class="cm"># e  ← last character</span>
+<span class="fn">print</span>(name[<span class="nm">1</span><span class="op">:</span><span class="nm">3</span>])             <span class="cm"># li ← slicing</span>
+
+<span class="cm"># Concatenation</span>
+<span class="fn">print</span>(<span class="st">"Hello"</span> <span class="op">+</span> <span class="st">" World"</span>)    <span class="cm"># Hello World</span>
+<span class="fn">print</span>(<span class="st">"ha"</span> <span class="op">*</span> <span class="nm">3</span>)               <span class="cm"># hahaha</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-red">BOOL</span> Booleans — True or False</div>
+      <p class="card-text">Only two possible values: <code>True</code> or <code>False</code> (capital first letter — it matters). Booleans power all your logic and conditions.</p>
+      <pre><span class="var">is_raining</span> <span class="op">=</span> <span class="bl">True</span>
+<span class="var">is_sunny</span> <span class="op">=</span> <span class="bl">False</span>
+
+<span class="cm"># Comparison operators produce booleans</span>
+<span class="fn">print</span>(<span class="nm">5</span> <span class="op">></span> <span class="nm">3</span>)      <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="nm">5</span> <span class="op">==</span> <span class="nm">5</span>)     <span class="cm"># True  ← == not =</span>
+<span class="fn">print</span>(<span class="nm">5</span> <span class="op">!=</span> <span class="nm">3</span>)     <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="nm">5</span> <span class="op">>=</span> <span class="nm">10</span>)    <span class="cm"># False</span>
+
+<span class="cm"># Logical operators</span>
+<span class="fn">print</span>(<span class="bl">True</span> <span class="kw">and</span> <span class="bl">False</span>)  <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="bl">True</span> <span class="kw">or</span> <span class="bl">False</span>)   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="kw">not</span> <span class="bl">True</span>)         <span class="cm"># False</span>
+
+<span class="cm"># "Truthy" and "Falsy" — Python treats these as False:</span>
+<span class="cm"># 0, 0.0, "", None, [], {}</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="nm">0</span>))    <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="st">""</span>))   <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="nm">42</span>))   <span class="cm"># True</span></pre>
+      <div class="callout">
+        <strong>= vs ==</strong>: <code>=</code> assigns a value. <code>==</code> checks equality. Confusing them is probably the single most common beginner mistake in all of programming.
+      </div>
+    </div>
+
+    <div class="quiz" id="quiz2">
+      <div class="quiz-title">// Quick Check</div>
+      <div class="quiz-q">What does <code>print(10 // 3)</code> output?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(2,0,false,'That would be regular division (10 / 3). The double slash // means floor division.')">3.333...</button>
+        <button class="quiz-opt" onclick="answer(2,1,true,'Correct. // is floor division — it divides and drops the decimal, giving you the whole number part only.')">3</button>
+        <button class="quiz-opt" onclick="answer(2,2,false,'1 is the remainder, which is what % (modulo) gives you, not //.')">1</button>
+      </div>
+      <div class="quiz-feedback" id="qf2"></div>
+    </div>
+
+    <button class="btn-next" onclick="nextSection(2)">Next: Control Flow →</button>
+  </div>
+
+  <!-- SECTION 3: CONTROL FLOW -->
+  <div class="section" id="sec3">
+    <div class="section-title">Control Flow</div>
+    <p class="section-intro">Without control flow, your program just runs from top to bottom, does the same thing every time, and is basically useless. Control flow lets you make decisions and repeat actions.</p>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">IF</span> if / elif / else</div>
+      <p class="card-text">Check a condition. If it's true, do something. Otherwise, check another condition. Otherwise, do a default thing. The colon <code>:</code> at the end of each line is not optional.</p>
+      <pre><span class="var">score</span> <span class="op">=</span> <span class="nm">72</span>
+
+<span class="kw">if</span> score <span class="op">>=</span> <span class="nm">90</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"Grade: A"</span>)
+<span class="kw">elif</span> score <span class="op">>=</span> <span class="nm">70</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"Grade: B"</span>)   <span class="cm"># ← this runs</span>
+<span class="kw">elif</span> score <span class="op">>=</span> <span class="nm">50</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"Grade: C"</span>)
+<span class="kw">else</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">"Grade: F"</span>)
+
+<span class="cm"># Output: Grade: B</span></pre>
+      <div class="callout">
+        <strong>Python checks conditions top to bottom and stops at the first true one.</strong> So order matters. Put your most specific conditions first.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-purple">WHILE</span> while loops — repeat while true</div>
+      <p class="card-text">Keeps running a block of code as long as a condition is true. If the condition never becomes false, you have an infinite loop. Python will not save you from this.</p>
+      <pre><span class="var">count</span> <span class="op">=</span> <span class="nm">0</span>
+
+<span class="kw">while</span> count <span class="op"><</span> <span class="nm">5</span><span class="op">:</span>
+    <span class="fn">print</span>(<span class="st">f"count is </span><span class="op">{</span>count<span class="op">}</span><span class="st">"</span>)
+    count <span class="op">+=</span> <span class="nm">1</span>     <span class="cm"># ESSENTIAL — without this, infinite loop</span>
+
+<span class="cm"># Output:</span>
+<span class="out"># count is 0</span>
+<span class="out"># count is 1</span>
+<span class="out"># count is 2</span>
+<span class="out"># count is 3</span>
+<span class="out"># count is 4</span>
+
+<span class="cm"># break — exit loop immediately</span>
+<span class="var">n</span> <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">while</span> <span class="bl">True</span><span class="op">:</span>      <span class="cm"># deliberately infinite</span>
+    <span class="kw">if</span> n <span class="op">==</span> <span class="nm">3</span><span class="op">:</span>
+        <span class="kw">break</span>    <span class="cm"># exits the loop</span>
+    n <span class="op">+=</span> <span class="nm">1</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">FOR</span> for loops — iterate over a sequence</div>
+      <p class="card-text">The most common loop in Python. For every item in a collection, do something. With <code>range()</code> you can loop a specific number of times.</p>
+      <pre><span class="cm"># Loop over a list</span>
+fruits <span class="op">=</span> [<span class="st">"apple"</span>, <span class="st">"banana"</span>, <span class="st">"cherry"</span>]
+<span class="kw">for</span> fruit <span class="kw">in</span> fruits<span class="op">:</span>
+    <span class="fn">print</span>(fruit)
+
+<span class="cm"># Loop a specific number of times with range()</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>)<span class="op">:</span>       <span class="cm"># 0, 1, 2, 3, 4</span>
+    <span class="fn">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>)<span class="op">:</span>    <span class="cm"># 1, 2, 3, 4, 5</span>
+    <span class="fn">print</span>(i)
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">2</span>)<span class="op">:</span>  <span class="cm"># 0, 2, 4, 6, 8 (step=2)</span>
+    <span class="fn">print</span>(i)
+
+<span class="cm"># continue — skip current iteration, carry on</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">5</span>)<span class="op">:</span>
+    <span class="kw">if</span> i <span class="op">==</span> <span class="nm">2</span><span class="op">:</span>
+        <span class="kw">continue</span>   <span class="cm"># skip when i is 2</span>
+    <span class="fn">print</span>(i)
+<span class="cm"># Output: 0 1 3 4  (2 is missing)</span></pre>
+      <div class="callout tip">
+        <strong>range() explained:</strong> <code>range(stop)</code> → 0 to stop-1. <code>range(start, stop)</code> → start to stop-1. <code>range(start, stop, step)</code> → start to stop-1 in increments of step. The end is always <em>exclusive</em> — this confuses everyone at first.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="badge badge-green">COMBO</span> Putting it all together</div>
+      <pre><span class="cm"># FizzBuzz — the classic example</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">16</span>)<span class="op">:</span>
+    <span class="kw">if</span> i <span class="op">%</span> <span class="nm">15</span> <span class="op">==</span> <span class="nm">0</span><span class="op">:</span>
+        <span class="fn">print</span>(<span class="st">"FizzBuzz"</span>)
+    <span class="kw">elif</span> i <span class="op">%</span> <span class="nm">3</span> <span class="op">==</span> <span class="nm">0</span><span class="op">:</span>
+        <span class="fn">print</span>(<span class="st">"Fizz"</span>)
+    <span class="kw">elif</span> i <span class="op">%</span> <span class="nm">5</span> <span class="op">==</span> <span class="nm">0</span><span class="op">:</span>
+        <span class="fn">print</span>(<span class="st">"Buzz"</span>)
+    <span class="kw">else</span><span class="op">:</span>
+        <span class="fn">print</span>(i)
+
+<span class="cm"># Output: 1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fizz, Buzz, 11, Fizz, 13, 14, FizzBuzz</span></pre>
+    </div>
+
+    <div class="quiz" id="quiz3">
+      <div class="quiz-title">// Quick Check</div>
+      <div class="quiz-q">What does <code>range(2, 10, 3)</code> produce?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(3,0,false,'That would be range(2, 10) with no step. The third argument is the step size.')">2, 3, 4, 5, 6, 7, 8, 9</button>
+        <button class="quiz-opt" onclick="answer(3,1,true,'Correct. Starts at 2, counts up by 3, stops before 10. So: 2, 5, 8.')">2, 5, 8</button>
+        <button class="quiz-opt" onclick="answer(3,2,false,'Close, but range stops before the end value, not at it. 10 is not included.')">2, 5, 8, 10</button>
+      </div>
+      <div class="quiz-feedback" id="qf3"></div>
+    </div>
+
+    <button class="btn-next" onclick="completeAll()">Complete Phase 1 ✓</button>
+  </div>
+
+  <!-- COMPLETION -->
+  <div class="completion" id="completion">
+    <span class="completion-icon">🎯</span>
+    <h2>Phase 1 Done.</h2>
+    <p>You've covered the actual fundamentals — not toy examples, not hand-waving. Now you know enough to write code that does something real.</p>
+
+    <div class="summary-grid" style="margin-top:32px; text-align:left;">
+      <div class="summary-item"><strong>Interpreter vs Script</strong><span>Interactive for experimenting; .py files for real code. Don't forget print() in scripts.</span></div>
+      <div class="summary-item"><strong>Indentation</strong><span>4 spaces, never mix tabs and spaces. Your editor should handle this automatically.</span></div>
+      <div class="summary-item"><strong>Data Types</strong><span>int, float, complex, str, bool. Python infers types. Use type() when confused.</span></div>
+      <div class="summary-item"><strong>Control Flow</strong><span>if/elif/else for decisions. for + range() for counted loops. while for conditional loops.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const totalSections = 4;
+  const completed = new Set();
+  let currentSection = 0;
+
+  function showSection(idx) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('sec' + idx).classList.add('active');
+    document.querySelectorAll('.tab')[idx].classList.add('active');
+    currentSection = idx;
+    document.getElementById('completion').classList.remove('show');
+  }
+
+  function nextSection(idx) {
+    completed.add(idx);
+    updateProgress();
+    const tab = document.querySelectorAll('.tab')[idx];
+    tab.classList.add('done');
+    if (idx + 1 < totalSections) showSection(idx + 1);
+  }
+
+  function completeAll() {
+    completed.add(3);
+    updateProgress();
+    document.querySelectorAll('.tab')[3].classList.add('done');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('completion').classList.add('show');
+  }
+
+  function updateProgress() {
+    const pct = (completed.size / totalSections) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = completed.size + ' / ' + totalSections + ' complete';
+  }
+
+  function answer(sectionIdx, optIdx, isCorrect, explanation) {
+    const quiz = document.getElementById('quiz' + sectionIdx);
+    const opts = quiz.querySelectorAll('.quiz-opt');
+    const feedback = document.getElementById('qf' + sectionIdx);
+
+    opts.forEach(o => o.disabled = true);
+    opts[optIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+
+    if (!isCorrect) {
+      // find and highlight correct
+      const correctMap = {0: 1, 1: 2, 2: 1, 3: 1};
+      opts[correctMap[sectionIdx]].classList.add('correct');
+    }
+
+    feedback.innerHTML = (isCorrect ? '✓ ' : '✗ ') + explanation;
+    feedback.classList.add('show');
+  }
+</script>
+</body>
+</html>

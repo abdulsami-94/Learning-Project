@@ -1,0 +1,122 @@
+.body {
+    padding: 10px;
+    margin: 0%;
+    font-family: monospace Arial, Helvetica, sans-serif;
+    scroll-behavior: smooth;
+    background-color: wheat;
+}
+
+h1 {
+    text-align: center;
+}
+
+.first {
+    border: none;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    padding: 25px;
+}
+
+.second {
+    border: none;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    padding: 25px;
+}
+.third {
+    border: none;
+    align-items: center;
+    display: flex;
+    border-radius: 8px;
+    flex-direction: column;
+    padding: 25px;
+}
+
+.full {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px;
+    padding: 10px;
+    background-color: white;
+}
+
+
+button {
+    background-color: #ff7eb3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #ff4f96;
+    transform: translateY(-3px);
+}
+
+button:active {
+    transform: translateY(1px);
+    background-color: #e63f84;
+}
+
+button:focus {
+    outline: 3px solid rgba(255, 126, 179, 0.4);
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    background: #222;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor:help;
+}
+
+.tooltip::after {
+    content: "This is a tooltip!";
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color:#fff;
+    padding:6px 10px;
+    border-radius:6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+
+.quote {
+    position: relative;
+    font-size: 20px;
+    font-family: italic;
+    color: #333;
+    border-left: 4px solid #ff7eb3;
+    padding-left:  20px;
+    margin: 40px;
+}
+
+.quote::before {
+    content: "“" ;
+    font-size: 48px;
+    color: #ff7eb3;
+    position:absolute;
+    left: -25px;
+    top: -10px;
+}
