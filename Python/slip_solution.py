@@ -323,3 +323,366 @@ for s in str_list:
         print(f' "{s}" qualifies')
 
 print(f'Count of qualifying strings: {count}')
+
+
+
+# SLIP 11
+# 1 - REMOVE DUPLICATE FROM A LIST AND DISPLAY RESULTANT LIST
+my_list = [1, 2, 3, 2, 4, 3, 5, 1]
+print('Original List:', my_list)
+
+unique = list(set(my_list))
+print('After removing duplicate :', unique)
+
+
+# 2 - ACCEPT A SENTENCE COUNT WORDS FIND LONGEST AND SHORTEST WORD
+sentence = input('Enter a sentence: ')
+words = sentence.split()
+
+print(f'Number of words: {len(words)}')
+longest = max(words, key=len)
+shortest = min(words, key=len)
+
+print(f'{longest} ({len(longest)} chars)')
+print(f'{shortest} ({len(shortest)} chars)')
+
+
+# 2 - A PRINT ALL ODD NUMBERS BETWEEN 1 AND 50 USING LOOP
+
+i = 1
+
+while i <= 50:
+    if i % 2 != 0:
+        print(i, end=' ')
+    i += 1
+print()
+    
+
+
+# SLIP 12
+# 1 - Arrange String Characters so Lowercase Letters Come First
+s = input('Enter a string: ')
+
+lower_chars = [ch for ch in s if ch.islower()]
+other_chars = [ch for ch in s if not ch.islower()]
+
+result =  ''.join(lower_chars + others_chars)
+print('Rearrange String:', result)
+
+
+# 2 - Check if Number is Divisible by 5 and 7, and Whether its Even or Odd
+n = int(input('Enter a Number : '))
+
+if n % 5 == 0 and n % 7 == 0 :
+    print(f"{n} is Divisible by 5 and 7")
+elif n % 5 == 0:
+    print(f"{n} is Divisible by 5")
+elif n % 7 == 0:
+    print(f"{n} is Divisible by 7")
+else:
+    print(f"{n} is Not Divisible by 5 and 7")
+
+
+if n % 2 == 0:
+    print("It's Even")
+else:
+    print("It's Odd")
+
+
+# 2A - Accept a List of Integers Count Even and Odd, Separate into Two Lists
+nums = list(map(int, input('Enter some Numbers: ').split()))
+even_list = [ n for n in nums if n % 2 == 0 ]
+odd_list = [ n for n in nums if n % 2 != 0 ]
+
+print(even_list)
+print(odd_list)
+
+
+
+# SLIP 13 
+# 1 - Swap Two Numbers
+a = int(input('Enter First Number: '))
+b = int(input('Enter Second Number: '))
+
+a, b = b, a
+
+print(a , b)
+
+
+# 2 - Find Words in a String that Contain Both Digits and Letters
+sentence = input('Enter a Sentence: ')
+
+words = sentence.split()
+result = []
+
+for word in words :
+    has_digit = any(ch.isdigit() for ch in word)
+    has_letters = any(ch.isalpha() for ch in word) 
+    if has_letters and has_digit:
+        result.append(word)
+
+print('Word containing both digits and letters:', result)
+    
+
+# 2A - Remove All Occurrences of an Element from a Given List
+my_list = [1, 2, 3, 2, 4, 2, 5]
+
+elem = int(input('Enter element to remove: '))
+
+new_list = [x for x in my_list if x != elem]
+print('After removal: ', new_list)
+
+
+
+# SPIP 14
+# 1 - Interchange First and Last Element of a List
+my_list = [10, 20, 30, 40]
+my_list[0], my_list[-1] = my_list[-1], my_list[0]
+
+print(my_list)
+
+
+# 2 - Find Comman Characters Between Two Strings and Check if Equal
+s1 = input('Enter first string: ')
+s2 = input('Enter second string: ')
+
+common = set(s1) & set(s2)
+print('Common characters :', sorted(common))
+
+
+# 2A - Print the Fibonacci Sequence
+n = int(input('How many terms? '))
+a, b = 0, 1
+
+print('Fibonacci Sequence: ')
+for i in range(n):
+    print(a, end=' ')
+    a, b = b, a + b
+print()
+
+
+
+# SLIP 15
+# 1 - Square Each Element of the List and Print in Reverse Order
+my_list = [1, 2, 3, 4, 5]
+
+squared = [x ** 2 for x in my_list]
+print('Squared List :',squared)
+print('Reversed List', squared[::-1])
+
+
+# 2 - Find the Sum of Natural Number
+n = int(input('Enter n: '))
+
+formula_sum = n * (n + 1) // 2
+print(f'Sum of First {n} natural numbers: {formula_sum}')
+
+
+# 2A - Accept a Sentence Count Words and Display in Reverse Word Order
+sentence = input('Enter a sentence: ')
+words = sentence.split()
+
+print(f'Number of Words: {len(words)}')
+print(f'Reversed order: {" ".join(reversed(words))}')
+
+
+
+
+# SLIP 16
+# 1 - Check Whether the Year is a Leap Year or Not
+year = int(input('Enter a year: '))
+
+if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+    print(f'{year} is a Leap Year')
+else:
+    print(f'{year} is NOT a Leap Year')
+
+
+# 2 - Remove Duplicate Characters, Replace Spaces with UnderScore
+sentence = input('Enter a Sentence: ')
+
+seen = []
+result = ''
+
+for ch in sentence:
+    if ch not in seen:
+        if ch == ' ':
+            result += '_'
+        else:
+            result += ch
+        seen.append(ch)
+
+print('Modified string:', result)
+
+
+# 2A - Square Each Element and Print in Reverse Order 
+my_list = [1, 2, 3, 4, 5]
+
+squared = [x ** 2 for x in my_list]
+
+print('Squared :',squared)
+print('Reversed Square :',squared[::-1])
+
+
+
+# SLIP 17
+# 1 - Check Whether a String is Palindrome or Not
+s = input('Enter a string: '.lower())
+
+if s == s[::-1]:
+    print(f'"{s}" is a Palindrome')
+else:
+    print(f'"{s}" is NOT a Palindrome')
+
+
+# 2 - Convert Decimal Number to Binary Using a Function
+def decimal_to_binary(n):
+    if n == 0:
+        return '0'
+    binary = ''
+
+    while n > 0:
+        binary = str(n % 2) + binary
+        n //= 2
+    return binary
+
+num = int(input('Enter a decimal number: '))
+print(f'Binary of {num}: {decimal_to_binary(num)}')
+print(f'Built-in Check : {bin(num) [2:]}')
+
+
+# 2A - Sort a Tuple
+t = (2, 4, 6, 1, 4, 7.8, 2.7)
+
+sorted_t = tuple(sorted(t))
+print(sorted_t)
+
+
+
+# SLIP 18
+# 1 - Find the Maximum of Three Numbers
+num1 = int(input('Enter First Number: '))
+num2 = int(input('Enter Second Number: '))
+num3 = int(input('Enter Third Number: '))
+
+max_val = max(num1, num2, num3)
+print(max_val)
+
+
+# 2 - Check Whether an Element Exits Within a Tuple
+value = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+che = int(input('Enter a Element you want to search (1-9): '))
+
+if che in value :
+    print('Element Found')
+else:
+    print('Not Found')
+
+
+# 2A - Find the Length of a Set
+s = set(map(int, input('ENter the Numbers: ').split()))
+
+s_len = len(s)
+
+print(s_len)
+        
+
+
+# SLIP 19 
+# 1 - Check Whether a Number is Prime or Not
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+n = int(input('Enter a number: '))
+if is_prime(n):
+    print(f'{n} is PRIME')
+else:
+    print(f'{n} is NOT PRIME')
+
+
+# 2 - Combine Two Dictionaries Adding Values for Common Keys
+from collections import Counter
+
+d1 = {'a': 100, 'b':200, 'c':300}
+d2 = {'a': 300, 'b':200, 'd':400}
+
+result = Counter(d1) + Counter(d2)
+print('Combined Dictionary:', dict(result))
+
+
+# 2A - Convert a TUple to a String and Display in Reverse
+t = (1, 2, 3, 4, 5)
+
+s = ''.join(str(x) for x in t)
+print('As String:', s)
+print('Reversed: ',s[::-1])
+
+
+
+# SLIP 20 
+# 1 - Reverse Words in a Given String
+sentence = input('Enter a sentence: ')
+sen_words = ' '.join(sentence.split()[::-1])
+print(sen_words)
+
+
+# 2 - Remove All Even Numbers from a List
+li = list(map(int, input('Enter number seperate by spaces: ').split()))
+odd_only = [l for l in li if l % 2 != 0]
+
+print(li)
+print(odd_only)
+
+
+# 2A - Print All Prime Numbers in a Specified Range
+def is_prime(n):
+    if n < 2: return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0: return False
+    return True
+
+start = int(input('Enter start of range: '))
+end = int(input('Enter end of range : '))
+
+primes = [n for n in range(start, end + 1) if is_prime(n)]
+print(f'Prime numbers between {start} and {end}: {primes}')
+
+
+
+# SLIP 21
+# 1 - Find Minimum of Three Numbers Using a Function
+def find_minimum(a, b, c):
+    return min(a, b, c)
+
+a = float(input('Enter first number : '))
+b = float(input('Enter second number : '))
+c = float(input('Enter third number : '))
+
+print(f'Minimum of {a}, {b}, {c} is: {find_minimum(a, b, c)}')
+
+
+# 2 - Find Symmetric Difference of Two Sets
+A = {1, 2, 3, 4, 5}
+B = {3, 4, 5, 6, 7}
+print('Set A:',A)
+print('Set B:',B)
+
+sym_diff = A ^ B 
+print('Symmetric difference (A ^ B):', sym_diff)
+
+
+# 2A - Find the Student with the Higest Makes from Dictionary
+students = {'Alice': 85, 
+            'Bob': 92, 
+            'Charlia': 78, 
+            'Diana': 95, 
+            'Eve': 88
+            }
+
+top_students = max(students, key=students.get)
+print(f'Top students: {top_students} with {students[top_students]} marks')

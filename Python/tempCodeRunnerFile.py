@@ -1,8 +1,9 @@
-str_list = ['abc', 'ab', 'aba', 'hello', 'madam', 'hi', 'level']
-count = 0
-for s in str_list:
-    if len(s) >= 3 and s[0] == s[-1]:
-        count += 1
-        print(f' "{s}" qualifies')
+students = {'Alice': 85, 
+            'Bob': 92, 
+            'Charlia': 78, 
+            'Diana': 95, 
+            'Eve': 88
+            }
 
-print(f'Count of qualifying strings: {count}')
+top_students = max(students, key=students.get)
+print(f'Top students: {top_students} with {students[top_students]} marks')
