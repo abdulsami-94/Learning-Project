@@ -1,9 +1,11 @@
-students = {'Alice': 85, 
-            'Bob': 92, 
-            'Charlia': 78, 
-            'Diana': 95, 
-            'Eve': 88
-            }
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
 
-top_students = max(students, key=students.get)
-print(f'Top students: {top_students} with {students[top_students]} marks')
+n = int(input('Enter a number: '))
+result = is_prime(n)
+print(f'{n} is prime: {result}')

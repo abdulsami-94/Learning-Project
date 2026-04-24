@@ -686,3 +686,330 @@ students = {'Alice': 85,
 
 top_students = max(students, key=students.get)
 print(f'Top students: {top_students} with {students[top_students]} marks')
+
+
+
+# SLIP 22
+# 1 - Find the Factorial of a Number
+def factorial(n):
+    if n < 0:
+        return 'Undefined (nagetive)'
+    if n == 0 or n == 1:
+        return 1
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+n = int(input('Enter a number: '))
+print(f'{n}! = {factorial(n)}')
+
+
+# SLIP 2 - Generate Dictionary of x: x*x for numbers 1 on n
+n = int(input('Enter n: '))
+
+square_dict = {x: x*x for x in range(1, n + 1)}
+print(f'Dictionary (1 to {n}):',square_dict)
+
+
+# SLIP 2A - Convert Lowercase to Uppercase and Vice Versa (Swap Case)
+sentence = input('Enter the Words: ')
+swapped = sentence.swapcase()
+
+print('Swaped case: ',swapped)
+
+
+
+# SLIP 23
+# 1 - Get 4th Element from Front and 6th Element from Last of a Tuple
+t = (10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+print('Tuple:', t)
+
+fourth_from_front = t[3]     # index 3 = 4th Element
+sixth_from_last = t[-6]      # index -6 = 6th from end
+
+print(f'4th element from front: {fourth_from_front}')
+print(f'6th element from last: {sixth_from_last}')
+
+
+# SLIP 2 - Function to Print Sum of All Numbers in a List
+def list_sum(lst):
+    total = 0
+    for num in lst:
+        total += num
+    return total
+
+numbers = list(map(int, input('Enter numbers: ').split()))
+print('List:', numbers)
+print('Sum :', list_sum(numbers))
+print('Build-in Check: ', sum(numbers))
+
+
+# 2A - Find the Factorial of a Number Using a Loop
+n = int(input('Enter a number: '))
+
+if n < 0:
+    print('Factorial undifined for negative numbers')
+elif n == 0 or n == 1:
+    print(f'{n}! = 1')
+else:
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    print(f'{n}! = {result}')
+
+
+
+# SLIP 24
+# 1 - Split a List into Positive and Negative Number Lists
+numbers = list(map(int, input('Enter numbers seperated by spaces: ').split()))
+print('Input List', numbers)
+
+positive = [n for n in numbers if n > 0]
+negative = [n for n in numbers if n < 0]
+
+print('Positive numbers:', positive)
+print('Negative numbers:', negative)
+
+
+# 2 - Check Whether a Number is Perfect or Not
+def is_perfect(n):
+    if n < 2:
+        return False
+    divisors = [i for i in range(1, n) if n % i == 0]
+    return sum(divisors) == n
+
+n = int(input('Enter a Number: '))
+if is_perfect(n):
+    print(f'{n} is a PERFECT number')
+else:
+    print(f'{n} is NOT a perfect number')
+
+
+# 2A - Check if a Substring is Persent in a Given String
+main = input('Enter the main string: ')
+sub = input('Enter the substring : ')
+
+if sub in main:
+    print(f'"{sub}" IS present in "{main}"')
+    print(f'Starting index: {main.index(sub)}')
+else:
+    print(f'"{sub}" is NOT present in "{main}"')
+
+
+
+# SLIP 25
+# 1 - Check Armstrong Number
+n = int(input('Enter a number:'))
+digits = str(n)
+power = len(digits)
+total = sum(int(d) ** power for d in digits)
+
+if total == n:
+    print(f'{n} is an Armstrong Number')
+else:
+    print(f'{n} is NOT an Armstrong number')
+
+
+# 2 - Accept n Elements -- Find Largest, Smallest, Sum, and Average
+n = int(input('How many elemnts? '))
+numbers = []
+for i in range(n):
+    numbers.append(float(input(f'Enter element {i + 1}: ')))
+
+print(f'List : {numbers}')
+print(f'Largest : {max(numbers)}')
+print(f'Smallest : {min(numbers)}')
+print(f'Sum : {sum(numbers)}')
+print(f'average : {sum(numbers)/len(numbers):.2f}')
+
+
+#2A - Create a Dictionary from a String (Character Frequency)
+s = input('Enter a string: ').lower()
+freq = {}
+
+for ch in s:
+    if ch.isalpha():
+        freq[ch] = freq.get(ch, 0) + 1
+
+print('Character frequency dictionary:', freq)
+
+
+
+# SLIP 26
+# 1 - Sum All items in a List
+my_list = list(map(int, input('Enter numbers: ').split()))
+print('List:', my_list)
+
+print('Sum :',sum(my_list))
+
+
+# 2 - Function to Check if a Number is a Given Range
+def in_range(n, low, high):
+    return low <= n <= high
+
+n = float(input('Enter a number :'))
+low = float(input('Enter lower bound :'))
+high = float(input('Enter upper bond :'))
+
+if in_range(n ,low, high):
+    print(f'{n} IS in the range [{low}, {high}]')
+else:
+    print(f'{n} is NOT in the range [{low}, {high}]')
+
+
+# 2A - Create a List of Tuples (Numbers, Square of Number)
+n = int(input('Enter how many numbers: '))
+
+result = [(x, x**2) for x in range(1, n + 1)]
+print('List of (number, square) tuples:')
+for items in result:
+    print(f' {items}')
+
+
+
+# SLIP 27
+# 1 - Check if a Number is Odd or Even
+n = int(input('Enter a Number: '))    
+if n % 2 == 0:
+    print(f'{n} is Even')
+else:
+    print(f'{n} is Odd')
+
+
+# 2 - Count Upper Case and Lower Case Letters in a String
+def count_case(s):
+    upper = 0
+    lower = 0
+    for ch in s:
+        if ch.isupper():
+            upper += 1
+        elif ch.islower():
+            lower += 1
+    return upper, lower
+
+s = input('Enter a string: ')
+u, l = count_case(s)
+print(f'Upper case letters: {u}')
+print(f'Lower case letters: {l}')
+
+
+# 2A - Partition a List: Negatives First, Then Zeros, Then Positives
+numbers = list(map(int, input('Enter integers: ').split()))
+print('Input list:', numbers)
+
+negatives = [n for n in numbers if n < 0]
+zeros = [n for n in numbers if n == 0]
+positives = [n for n in numbers if n > 0]
+
+result = negative + zeros + positive
+print(result)
+
+
+
+# SLIP 28 
+# 1- Perform Arithmetic Operations (+, -, *, /, %)
+a = float(input('Enter first number : '))
+b = float(input('Enter second number : '))
+
+print(f'Addition : {a} + {b} = {a + b}')
+print(f'Subtraction : {a} - {b} = {a - b}')
+print(f'Multiplication : {a} * {b} = {a * b}')
+
+if b != 0:
+    print(f'Division : {a} / {b} = {a / b:.2f}')
+    print(f'Modulus : {a} % {b} = {a % b}')
+else:
+    print('Division/Modulus: undefined (division by zero)')
+
+
+# 2 - Create Union and Intersection of Two Sets
+A = {1, 2, 3, 4, 5}
+B = {3, 4, 5, 6, 7}
+print('Set A:', A)
+print('Set B:', B)
+
+union = A | B
+intersection = A & B
+
+print('Union (A | B):', union)
+print('Intersection (A & B):', intersection)
+
+
+# 2A - Concatenate Three Dictionaries into One New Dictionary
+dic1 = {1: 11, 2: 22}
+dic2 = {3: 33, 4: 44}
+dic3 = {5: 55, 6: 66}
+
+merged = {**dic1, **dic2, **dic3}
+print('Merged dictionary:', merged)
+
+merged2 = {}
+for d in [dic1, dic2, dic3]:
+    merged2.update(d)
+print('Merged (update) :', merged2)
+
+
+
+# SLIP 29
+# 1 - Check if a Number is Positive, Negative, or Zero
+n = float(input('Enter a number: '))
+
+if n > 0:
+    print(f'{n} is Positive')
+elif n < 0:
+    print(f'{n} is Negative')
+else:
+    print(f'{n} is Zero')
+
+
+# 2 - Copy Elements 22 and 66 from tuple1 into a New Tuple
+tuple1 = (11, 22, 33, 44, 55, 66)
+print('Original tuple:', tuple1)
+
+new_tuple = (tuple1[1], tuple[5])
+print('New tuple (22 and 66):', new_tuple)
+
+
+# 2A - Convert Lowercase to Uppercase and Vise Versa
+s = input('Enter a string: ')
+
+swapped = s.swapcase()
+print('Swapped case (build-in):', swapped)
+
+
+# SLIP 30
+# 1 - Find the Frequnecy of Characters in a String
+s = input('Enter a String: ')
+freq = {}
+
+for ch in s:
+    freq[ch] = freq.get(ch, 0) + 1
+
+print('Character frequncires:')
+for char, count in sorted(freq.items()):print(f' "{char}": {count}')
+
+
+# 2 - Count items in a Dictionary Without Uning len()
+d = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}
+print('Dictionary:, d')
+
+count = 0
+for _ in d:
+    count += 1
+
+print(f'Number of items (without len()): {count}')
+
+
+# 2A - Function to Check Whether a Number is Prime (Retuen True/False)
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+n = int(input('Enter a number: '))
+result = is_prime(n)
+print(f'{n} is prime: {result}')
